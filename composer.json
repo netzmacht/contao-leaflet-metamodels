@@ -1,0 +1,57 @@
+{
+    "name":"netzmacht/contao-leaflet-metamodels",
+    "description":"Metamodels layer for the Leaflet maps integration in Contao CMS",
+    "keywords":["contao", "maps", "leaflet", "metamodels"],
+    "type":"contao-module",
+    "license":"LGPL-3.0+",
+    "authors":[
+        {
+            "name":"David Molineus",
+            "email":"mail@netzmacht.de",
+            "homepage":"http://www.netzmacht.de",
+            "role":"Project leader"
+        }
+    ],
+    "support":{
+        "email":"mail@netzmacht.de",
+        "issues":"https://github.com/netzmacht/contao-leaflet-metamodels/issues",
+        "source":"https://github.com/netzmacht/contao-leaflet-metamodels"
+    },
+    "require":{
+        "php":">=5.4",
+        "contao/core":">=3.2,<3.5-dev",
+        "netzmacht/contao-leaflet-maps": "~1.0",
+        "netzmacht/contao-dev-tools":"~1.0",
+        "bit3/contao-meta-palettes": "~1.5",
+        "menatwork/contao-multicolumnwizard": "~3.2"
+    },
+    "require-dev":{
+        "netzmacht/contao-build-tools": "1.0.x-dev"
+    },
+    "autoload": {
+        "psr-0": {
+            "Netzmacht\\Contao\\Leaflet": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    },
+    "prefer-stable": true,
+    "minimum-stability": "dev",
+    "extra":{
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        },
+        "contao": {
+            "sources":{
+                "module": "system/modules/leaflet-metamodels"
+            },
+            "transifex": {
+                "project": "contao-leaflet-maps",
+                "prefix": "metamodels-",
+                "languages_cto": "module/languages",
+                "languages_tx": ".tx"
+            }
+        }
+    }
+}
