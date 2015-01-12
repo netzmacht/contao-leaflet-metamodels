@@ -30,7 +30,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Netzmacht\\Contao\\Leaflet": "src/"
+            "Netzmacht\\Contao\\Leaflet\\MetaModels": "src/"
         }
     },
     "config": {
