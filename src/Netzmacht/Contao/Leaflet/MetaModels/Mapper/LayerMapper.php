@@ -11,6 +11,7 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Mapper;
 
+use ContaoCommunityAlliance\UrlBuilder\UrlBuilder;
 use MetaModels\Factory;
 use MetaModels\Filter\Setting\Factory as FilterSettingFactory;
 use MetaModels\Filter\Setting\ICollection;
@@ -84,10 +85,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         $referred = false;
 
         if ($definition instanceof GeoJsonAjax) {
-            $requestBuilder = RequestUrl::createBuilder($model->id);
-            $requestBuilder->setQueryParameter('filter', urlencode(base64_encode(\Environment::get('requestUri'))));
-
-            $definition->setUrl($requestBuilder->getUrl());
+            $definition->setUrl(RequestUrl::create($model->id));
 
             $referred = true;
         }
