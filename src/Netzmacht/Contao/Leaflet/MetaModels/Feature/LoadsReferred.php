@@ -17,7 +17,13 @@ use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
-
+/**
+ * Interface LoadsReferred describes MetaModel features which can also being loaded when called in the deferred mode.
+ *
+ * This means that each feature can be handled as GeoJSON feature.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
+ */
 interface LoadsReferred
 {
     /**

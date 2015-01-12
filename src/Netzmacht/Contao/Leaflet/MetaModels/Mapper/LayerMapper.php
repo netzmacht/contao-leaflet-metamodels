@@ -29,10 +29,25 @@ use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
 
+/**
+ * Class LayerMapper maps the metamodels layer definition.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Mapper
+ */
 class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 {
+    /**
+     * The definition class.
+     *
+     * @var string
+     */
     protected static $definitionClass = 'Netzmacht\LeafletPHP\Definition\Group\GeoJson';
 
+    /**
+     * The layer type.
+     *
+     * @var string
+     */
     protected static $type = 'metamodels';
 
     /**
@@ -102,7 +117,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     /**
      * Get Features.
      *
-     * @param $model
+     * @param \Model $model The layer model.
      *
      * @return Feature[]
      */
@@ -129,13 +144,16 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     }
 
     /**
-     * @param LayerModel   $model
-     * @param LatLngBounds $bounds
+     * Get all MetaModel items.
+     *
+     * @param LayerModel $model The layer model.
      *
      * @return IItems
      */
-    private function getItems(LayerModel $model, LatLngBounds $bounds = null)
-    {
+    private function getItems(
+        LayerModel $model
+        // , LatLngBounds $bounds = null
+    ) {
         $metaModel = Factory::byId($model->metamodel);
         $filter    = $metaModel->getEmptyFilter();
 
@@ -154,30 +172,39 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
             0,
             $model->metamodel_use_limit ? ($model->metamodel_limit ?: 0) : 0,
             $model->metamodel_sortby_direction
-            /* $this->getAttributeNames() */
+            // $this->getAttributeNames() - Do we have to limit the attributes here?
         );
     }
 
     /**
-     * @param LayerGroup       $definition
-     * @param LayerModel       $model
-     * @param DefinitionMapper $mapper
-     * @param LatLngBounds     $bounds
-     * @param bool             $referred
+     * Apply all features to all items.
+     *
+     * Each defined feature is applied to the MetaModels items which are fetched by the layers definition.
+     * The loading is aware of the deferred loading.
+     *
+     * It also recognize the Bounds of the map if defined (not implemented yet).
+     *
+     * @param LayerGroup       $definition The layer group.
+     * @param LayerModel       $model      The layer model.
+     * @param DefinitionMapper $mapper     The definition mapper.
+     * @param LatLngBounds     $bounds     The bounds.
+     * @param bool             $deferred   Load deferred.
+     *
+     * @return void
      */
     protected function applyFeatures(
         LayerGroup $definition,
         LayerModel $model,
         DefinitionMapper $mapper,
         LatLngBounds $bounds = null,
-        $referred = false
+        $deferred = false
     ) {
         $features = $this->getFeatures($model);
         $items    = $this->getItems($model, $bounds);
 
         foreach ($items as $item) {
             foreach ($features as $feature) {
-                if ($referred && !$feature instanceof LoadsReferred) {
+                if ($deferred && !$feature instanceof LoadsReferred) {
                     $feature->apply($item, $definition, $mapper, $bounds);
                 }
             }
@@ -187,9 +214,13 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     /**
      * Create a feature.
      *
-     * @param FeatureModel $featureModel
+     * @param FeatureModel $featureModel The Feature model.
      *
      * @return Feature
+     *
+     * @throws \RuntimeException If the feature is not defined.
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
     private function createFeature(FeatureModel $featureModel)
     {

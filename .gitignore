@@ -1,0 +1,7 @@
+/vendor/
+/bin/
+/.tx/
+
+coverage.xml
+
+composer.lock

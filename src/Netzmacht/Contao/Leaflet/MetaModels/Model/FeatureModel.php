@@ -13,9 +13,10 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
 
 
 /**
- * @property int latitudeAttribute
- * @property int longitudeAttribute
- * @property int customIcon
+ * The feature model.
+ *
+ * @property int        latitudeAttribute
+ * @property int        longitudeAttribute
  * @property mixed|null iconAttribute
  * @property mixed|null addPopup
  * @property mixed|null renderSettings
@@ -28,5 +29,10 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
  */
 class FeatureModel extends \Model
 {
+    /**
+     * The table name.
+     *
+     * @var string
+     */
     protected static $strTable = 'tl_leaflet_mm_feature';
 }

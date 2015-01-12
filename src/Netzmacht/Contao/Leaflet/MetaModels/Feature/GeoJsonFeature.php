@@ -20,6 +20,13 @@ use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
 
+/**
+ * Class GeoJsonFeature implements a MetaModel map feature for GeoJSON data.
+ *
+ * The GeoJSON data can be stored in an attribute or be linked by a file attribute.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
+ */
 class GeoJsonFeature extends AbstractFeature implements LoadsReferred
 {
     /**
@@ -45,20 +52,14 @@ class GeoJsonFeature extends AbstractFeature implements LoadsReferred
                 break;
 
             default:
-                $this->loadFeatureFromAttribute(
-                    $item,
-                    $attribute->getColName(),
-                    function (StaticFeature $feature) use ($parentLayer) {
-                        $parentLayer->addLayer($feature);
-                    }
-                );
+                $parentLayer->addLayer(new StaticFeature($item->get($attribute->getColName())));
         }
     }
 
     /**
      * Apply feature to an item.
      *
-     * @param Item $item              Current meta model item.
+     * @param Item              $item              Current meta model item.
      * @param FeatureCollection $featureCollection The geo json feature collection.
      * @param DefinitionMapper  $mapper            The definition mapper.
      * @param LatLngBounds      $bounds            Optional LatLng bounds.
@@ -90,16 +91,19 @@ class GeoJsonFeature extends AbstractFeature implements LoadsReferred
                 break;
 
             default:
-                $this->loadFeatureFromAttribute(
-                    $item,
-                    $attribute->getColName(),
-                    function (StaticFeature $feature) use ($featureCollection) {
-                        $featureCollection->addFeature($feature);
-                    }
-                );
+                $featureCollection->addFeature(new StaticFeature($item->get($attribute->getColName())));
         }
     }
 
+    /**
+     * Load features from file attribute.
+     *
+     * @param Item      $item      The metamodel.
+     * @param string    $attribute The attribute name.
+     * @param \callable $callback  The callback being called for each file.
+     *
+     * @return void
+     */
     private function loadFeaturesFromFile(Item $item, $attribute, $callback)
     {
         $value = $item->parseAttribute($attribute);
@@ -111,12 +115,5 @@ class GeoJsonFeature extends AbstractFeature implements LoadsReferred
         foreach ($value['raw']['path'] as $key => $path) {
             $callback($path, $key);
         }
-    }
-
-    private function loadFeatureFromAttribute(Item $item, $attribute, $callback)
-    {
-        $feature = new StaticFeature($item->get($attribute));
-
-        $callback($feature);
     }
 }

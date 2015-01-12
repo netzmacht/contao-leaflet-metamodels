@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * @package    dev
+ * @author     David Molineus <david.molineus@netzmacht.de>
+ * @copyright  2015 netzmacht creative David Molineus
+ * @license    LGPL 3.0
+ * @filesource
+ *
+ */
+
 array_insert(
     $GLOBALS['TL_DCA']['tl_leaflet_layer']['list']['operations'],
     0,
@@ -46,10 +55,6 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel']                  =
         'tl_class'           => 'w50',
         'includeBlankOption' => true,
         'chosen'             => true,
-    ),
-    'wizard'           => array
-    (
-        array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Layer', 'editMetaModel'),
     ),
     'sql'              => "int(11) NOT NULL default '0'"
 );
@@ -123,10 +128,6 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_filtering'] = array(
         'submitOnChange'     => true,
         'chosen'             => true,
         'tl_class'           => 'w50'
-    ),
-    'wizard'           => array
-    (
-        array('MetaModels\Dca\Content', 'editFilterSetting')
     ),
     'sql'              => "int(10) NOT NULL default '0'"
 );

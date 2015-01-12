@@ -11,7 +11,6 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Feature;
 
-
 use MetaModels\IItem;
 use MetaModels\Item;
 use Netzmacht\Contao\Leaflet\Definition\Style;
@@ -19,15 +18,24 @@ use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 use Netzmacht\Contao\Leaflet\Model\VectorModel;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\HasPopup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
 
+/**
+ * Class ReferenceFeature handles the reference feature of a MetaModel item.
+ *
+ * The reference allows to link to an layer, marker or icon.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
+ */
 class ReferenceFeature extends AbstractFeature
 {
+    /**
+     * {@inheritdoc}
+     */
     public function apply(IItem $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null)
     {
         $model = $this->fetchReferenceModel($item);
@@ -44,18 +52,12 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * {@inheritdoc}
+     * Fetch the reference model.
+     *
+     * @param IItem $item The MetaModel item.
+     *
+     * @return \Model|null
      */
-    public function applyGeoJson(
-        IItem $item,
-        FeatureCollection $featureCollection,
-        DefinitionMapper $mapper,
-        LatLngBounds $bounds = null
-    ) {
-        // TODO: Implement applyGeoJson() method.
-    }
-
-
     protected function fetchReferenceModel(IItem $item)
     {
         $reference = $this->getAttribute('referenceAttribute', $item)->getColName();
@@ -64,15 +66,12 @@ class ReferenceFeature extends AbstractFeature
         switch ($this->model->referenceType) {
             case 'layer':
                 return LayerModel::findActiveByPK($reference);
-                break;
 
             case 'vector':
                 return VectorModel::findActiveByPK($reference);
-                break;
 
             case 'marker':
                 return VectorModel::findActiveByPK($reference);
-                break;
 
             default:
                 return null;
@@ -80,8 +79,10 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * @param Item             $item
-     * @param DefinitionMapper $mapper
+     * Get vector style.
+     *
+     * @param Item             $item   The MetaModel item.
+     * @param DefinitionMapper $mapper The definition mapper.
      *
      * @return Style|null
      */
@@ -107,8 +108,12 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * @param IItem $item
-     * @param       $definition
+     * Apply the popup.
+     *
+     * @param IItem $item       The MetaModel item.
+     * @param mixed $definition The definition.
+     *
+     * @return void
      */
     protected function applyPopup(IItem $item, $definition)
     {
@@ -123,9 +128,13 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * @param IItem            $item
-     * @param DefinitionMapper $mapper
-     * @param                  $definition
+     * Apply a marker.
+     *
+     * @param IItem            $item       The MetaModel item.
+     * @param DefinitionMapper $mapper     The definition mapper.
+     * @param mixed            $definition The definition.
+     *
+     * @return void
      */
     protected function applyMarker(IItem $item, DefinitionMapper $mapper, $definition)
     {
@@ -139,9 +148,13 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * @param IItem            $item
-     * @param DefinitionMapper $mapper
-     * @param                  $definition
+     * Apply the path style.
+     *
+     * @param IItem            $item       The MetaModel item.
+     * @param DefinitionMapper $mapper     The definition mapper.
+     * @param mixed            $definition The definition.
+     *
+     * @return void
      */
     protected function applyStyle(IItem $item, DefinitionMapper $mapper, $definition)
     {
@@ -155,7 +168,9 @@ class ReferenceFeature extends AbstractFeature
     }
 
     /**
-     * @param IItem $item
+     * Get the element id.
+     *
+     * @param IItem $item The MetaModel.
      *
      * @return null|string
      */

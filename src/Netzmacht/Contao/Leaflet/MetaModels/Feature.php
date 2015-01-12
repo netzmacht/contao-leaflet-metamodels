@@ -11,13 +11,17 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels;
 
-
 use MetaModels\IItem;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
+/**
+ * A Feature can be applied to a MetaModel item so that it will be added to a layer group.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels
+ */
 interface Feature
 {
     /**

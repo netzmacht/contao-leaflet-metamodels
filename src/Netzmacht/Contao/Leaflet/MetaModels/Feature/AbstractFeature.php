@@ -11,11 +11,12 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Feature;
 
+use MetaModels\Attribute\IAttribute;
 use MetaModels\IItem as ITem;
 use MetaModels\IMetaModel;
 use MetaModels\Items;
 use MetaModels\Render\Setting\Factory as RenderSettingFactory;
-use MetaModels\Render\Setting\ICollection;
+use MetaModels\Render\Setting\ICollection as RenderSetting;
 use MetaModels\Render\Template;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\MetaModels\Feature;
@@ -23,9 +24,16 @@ use Netzmacht\Contao\Leaflet\MetaModels\Model\FeatureModel;
 use Netzmacht\Contao\Leaflet\Model\IconModel;
 use Netzmacht\LeafletPHP\Definition\Type\Icon;
 
+/**
+ * Class AbstractFeature is the base implementation of the metamodels feature interface.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
+ */
 abstract class AbstractFeature implements Feature
 {
     /**
+     * The feature model.
+     *
      * @var FeatureModel
      */
     protected $model;
@@ -33,7 +41,7 @@ abstract class AbstractFeature implements Feature
     /**
      * Construct.
      *
-     * @param FeatureModel $model
+     * @param FeatureModel $model The feature model.
      */
     public function __construct(FeatureModel $model)
     {
@@ -43,12 +51,12 @@ abstract class AbstractFeature implements Feature
     /**
      * Generate the content of the popup.
      *
-     * @param Item        $item
-     * @param ICollection $settings
+     * @param Item          $item     The metamodel item.
+     * @param RenderSetting $settings The given metamodel settings.
      *
      * @return null|string
      */
-    protected function getPopupContent(Item $item, ICollection $settings = null)
+    protected function getPopupContent(Item $item, RenderSetting $settings = null)
     {
         if (!$this->model->addPopup) {
             return null;
@@ -69,7 +77,7 @@ abstract class AbstractFeature implements Feature
         $value = $item->parseValue($this->getOutputFormat($settings), $settings);
 
         if ($settings) {
-            $template = new Template($settings->get('template'));
+            $template       = new Template($settings->get('template'));
             $template->view = $settings;
         } else {
             $template = new Template('metamodel_full');
@@ -87,13 +95,14 @@ abstract class AbstractFeature implements Feature
     }
 
     /**
-     * @param ICollection $settings
+     * Get the defined output format.
      *
-     * @param string      $default
+     * @param RenderSetting $settings The render settings.
+     * @param string        $default  The default output format.
      *
      * @return mixed|null|string
      */
-    protected function getOutputFormat(ICollection $settings = null, $default = 'text')
+    protected function getOutputFormat(RenderSetting $settings = null, $default = 'text')
     {
         if ($settings) {
             $format = $settings->get('format');
@@ -108,8 +117,10 @@ abstract class AbstractFeature implements Feature
 
 
     /**
-     * @param Item             $item
-     * @param DefinitionMapper $mapper
+     * Get the icon for the MetaModel item.
+     *
+     * @param Item             $item   The MetaModel item.
+     * @param DefinitionMapper $mapper The definition mapper.
      *
      * @return Icon|null
      */
@@ -135,28 +146,30 @@ abstract class AbstractFeature implements Feature
     }
 
     /**
-     * @param $metaModel
+     * Get the render setting.
      *
-     * @return \MetaModels\Render\Setting\Collection|\MetaModels\Render\Setting\ICollection
+     * @param IMetaModel $metaModel The MetaModel.
+     *
+     * @return RenderSetting|null
      */
-    protected function getRenderSettings($metaModel)
+    protected function getRenderSettings(IMetaModel $metaModel)
     {
-        $settings    = null;
-
         if ($this->model->renderSettings) {
             $settings = RenderSettingFactory::byId($metaModel, $this->model->renderSettings);
 
             return $settings;
         }
 
-        return $settings;
+        return null;
     }
 
     /**
-     * @param      $column
-     * @param Item $item
+     * Get a MetaModel attribute by a column name of the FeatureModel which contains the id.
      *
-     * @return \MetaModels\Attribute\IAttribute
+     * @param string $column The name of the attribute id.
+     * @param Item   $item   The metamodel item.
+     *
+     * @return IAttribute
      */
     protected function getAttribute($column, Item $item)
     {
@@ -175,6 +188,8 @@ abstract class AbstractFeature implements Feature
      * 1. $GLOBALS['TL_LANG']['MSC'][<mm tablename>][<render settings id>]['details']
      * 2. $GLOBALS['TL_LANG']['MSC'][<mm tablename>]['details']
      * 3. $GLOBALS['TL_LANG']['MSC']['details']
+     *
+     * @param IMetaModel $metaModel The MetaModel.
      *
      * @return string
      * @see    MetaModels\ItemList::getDetailsCaption

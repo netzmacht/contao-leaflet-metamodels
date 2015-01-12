@@ -16,14 +16,26 @@ use Netzmacht\Contao\DevTools\Dca\Options\OptionsBuilder;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 
+/**
+ * Helper class for tl_leaflet_mm_feature.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Dca
+ */
 class Feature
 {
+    /**
+     * Get all attribute ids of a metamodel.
+     *
+     * @param \DataContainer $dataContainer The data container driver.
+     *
+     * @return array
+     */
     public function getAttributes($dataContainer)
     {
         $options = array();
 
         if ($dataContainer->activeRecord) {
-            $layer     = LayerModel::findByPK($dataContainer->activeRecord->pid);
+            $layer = LayerModel::findByPK($dataContainer->activeRecord->pid);
 
             if (!$layer) {
                 return $options;
@@ -32,8 +44,8 @@ class Feature
             $factory   = new Factory();
             $metaModel = $factory->byId($layer->metamodel);
 
-            if($metaModel) {
-                foreach($metaModel->getAttributes() as $name => $attribute) {
+            if ($metaModel) {
+                foreach ($metaModel->getAttributes() as $attribute) {
                     $options[$attribute->get('id')] = $attribute->getName();
                 }
             }
@@ -42,6 +54,13 @@ class Feature
         return $options;
     }
 
+    /**
+     * Get all render settings of a metamodel.
+     *
+     * @param \DataContainer $dataContainer The data container driver.
+     *
+     * @return array
+     */
     public function getRenderSettings($dataContainer)
     {
         $settings = array();
@@ -63,6 +82,13 @@ class Feature
         return $settings;
     }
 
+    /**
+     * Generate the row label.
+     *
+     * @param array $row Current row.
+     *
+     * @return string
+     */
     public function generateRow($row)
     {
         return sprintf('%s <span class="tl_gray">%s</span>', $row['title'], $row['type']);

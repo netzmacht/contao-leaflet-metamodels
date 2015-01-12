@@ -11,7 +11,6 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels;
 
-
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
 use MetaModels\Attribute\IAttribute;
 use MetaModels\DcGeneral\Data\Model;
@@ -21,8 +20,16 @@ use Netzmacht\Contao\Leaflet\Event\GetHashEvent;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Event subscriber for the metamodels layer integration.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels
+ */
 class Subscriber implements EventSubscriberInterface
 {
+    /**
+     * {@inheritdoc}
+     */
     public static function getSubscribedEvents()
     {
         return array(
@@ -31,6 +38,13 @@ class Subscriber implements EventSubscriberInterface
         );
     }
 
+    /**
+     * Create the hash for a metamodel item.
+     *
+     * @param GetHashEvent $event The get hash event.
+     *
+     * @return void
+     */
     public function getItemHash(GetHashEvent $event)
     {
         $data = $event->getData();
@@ -60,8 +74,8 @@ class Subscriber implements EventSubscriberInterface
         $model = $event->getModel();
 
         if ($model instanceof Model) {
-            $item        = $model->getItem();
-            $attribute   = $item->getAttribute($event->getPropertyName());
+            $item      = $model->getItem();
+            $attribute = $item->getAttribute($event->getPropertyName());
 
             if (!$attribute) {
                 return;
@@ -89,6 +103,13 @@ class Subscriber implements EventSubscriberInterface
         }
     }
 
+    /**
+     * Parse the layer grouped value into the layer tree.
+     *
+     * @param int $value The layer id.
+     *
+     * @return string
+     */
     public function parseLayerGroup($value)
     {
         $label = '';
@@ -101,7 +122,7 @@ class Subscriber implements EventSubscriberInterface
                     $label = '/' . $label;
                 }
 
-                $label = $layer->title . $label ;
+                $label = $layer->title . ' [' . $layer->id . ']' . $label;
                 $value = $layer->pid;
 
             } else {
@@ -112,14 +133,23 @@ class Subscriber implements EventSubscriberInterface
         return $label ?: '/';
     }
 
+    /**
+     * Parse the layer label.
+     *
+     * @param string $row The layer label.
+     *
+     * @return string
+     */
     public function parseLayerLabel($row)
     {
         return $row['title'] . ' [' . $row['type'] . ']';
     }
 
     /**
-     * @param            $modelClass
-     * @param IAttribute $attribute
+     * Fetch all options for a given model class.
+     *
+     * @param string     $modelClass The model class.
+     * @param IAttribute $attribute  The MetaModel attribute which contains the select definitions.
      *
      * @return \Model\Collection|null
      */
