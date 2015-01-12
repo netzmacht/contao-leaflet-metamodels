@@ -14,6 +14,7 @@ namespace Netzmacht\Contao\Leaflet\MetaModels;
 
 use MetaModels\IItem;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
@@ -27,7 +28,7 @@ interface Feature
      * @param DefinitionMapper $mapper      The definition mapper.
      * @param LatLngBounds     $bounds      Optional LatLng bounds.
      *
-     * @return
+     * @return void
      */
     public function apply(IItem $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null);
 }

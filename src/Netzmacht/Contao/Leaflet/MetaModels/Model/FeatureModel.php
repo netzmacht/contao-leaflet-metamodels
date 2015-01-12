@@ -21,9 +21,12 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
  * @property mixed|null renderSettings
  * @property mixed|null popupAttribute
  * @property mixed|null options
+ * @property mixed|null coordinates
+ * @property mixed|null coordinatesAttribute
+ * @property mixed|null type
+ * @property mixed|null icon
  */
 class FeatureModel extends \Model
 {
     protected static $strTable = 'tl_leaflet_mm_feature';
-
 }

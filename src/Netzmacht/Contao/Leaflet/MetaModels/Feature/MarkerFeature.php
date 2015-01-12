@@ -13,37 +13,84 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Feature;
 
 
 use MetaModels\IItem as Item;
-use MetaModels\IMetaModel as MetaModel;
-use MetaModels\Render\Setting\Factory;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
-use Netzmacht\Contao\Leaflet\Model\IconModel;
+use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
-use Netzmacht\LeafletPHP\Definition\Type\Icon;
 use Netzmacht\LeafletPHP\Definition\Type\LatLng;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 
-class MarkerFeature extends AbstractFeature
+class MarkerFeature extends AbstractFeature implements LoadsReferred
 {
     /**
      * {@inheritdoc}
      */
     public function apply(Item $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null)
     {
-        $metaModel   = $item->getMetaModel();
-        $coordinates = $this->getCoordinates($item, $metaModel);
+        $marker = $this->buildMarker($item, $mapper);
 
-        if ($bounds && !$bounds->contains($coordinates)) {
-            return;
+        if ($marker) {
+            $parentLayer->addLayer($marker);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function applyGeoJson(
+        Item $item,
+        FeatureCollection $featureCollection,
+        DefinitionMapper $mapper,
+        LatLngBounds $bounds = null
+    ) {
+        $marker = $this->buildMarker($item, $mapper);
+
+        if ($marker) {
+            $featureCollection->addFeature($marker->toGeoJsonFeature());
+        }
+    }
+
+    /**
+     * @param Item      $item
+     *
+     * @return LatLng
+     */
+    protected function getCoordinates(Item $item)
+    {
+        if ($this->model->coordinates == 'separate') {
+            $latAttribute = $this->getAttribute('latitudeAttribute', $item);
+            $lngAttribute = $this->getAttribute('longitudeAttribute', $item);
+
+            return new LatLng(
+                $item->get($latAttribute->getColName()),
+                $item->get($lngAttribute->getColName())
+            );
         }
 
-        $icon       = $this->getIcon($item, $metaModel, $mapper);
-        $popup      = $this->getPopupContent($item, $metaModel);
+        $attribute = $this->getAttribute('coordinatesAttribute', $item);
+
+        return LatLng::fromString($item->get($attribute->getColName()));
+    }
+
+    /**
+     * @param Item             $item
+     * @param DefinitionMapper $mapper
+     *
+     * @return Marker
+     */
+    protected function buildMarker(Item $item, DefinitionMapper $mapper)
+    {
+        $metaModel   = $item->getMetaModel();
+        $coordinates = $this->getCoordinates($item);
+        $settings    = $this->getRenderSettings($metaModel);
+
+        $icon       = $this->getIcon($item, $mapper);
+        $popup      = $this->getPopupContent($item, $settings);
         $identifier = sprintf('mm_%s_%s_marker', $metaModel->getTableName(), $item->get('id'));
         $marker     = new Marker($identifier, $coordinates);
 
         if ($this->model->options) {
-            $marker->setOptions((array) json_decode($this->model->options, true));
+            $marker->setOptions((array)json_decode($this->model->options, true));
         }
 
         if ($icon) {
@@ -51,56 +98,11 @@ class MarkerFeature extends AbstractFeature
         }
 
         if ($popup) {
-            $marker->bindPopup($popup);
+            $marker->setPopupContent($popup);
         }
 
         // TODO: Attributes mapping
 
-        $parentLayer->addLayer($marker);
+        return $marker;
     }
-
-    /**
-     * @param Item      $item
-     * @param MetaModel $metaModel
-     *
-     * @return LatLng
-     */
-    protected function getCoordinates(Item $item, MetaModel $metaModel)
-    {
-        $latAttribute = $metaModel->getAttributeById($this->model->latitudeAttribute);
-        $lngAttribute = $metaModel->getAttributeById($this->model->longitudeAttribute);
-
-        return new LatLng(
-            $item->get($latAttribute->getColName()),
-            $item->get($lngAttribute->getColName())
-        );
-    }
-
-    /**
-     * @param Item             $item
-     * @param MetaModel        $metaModel
-     * @param DefinitionMapper $mapper
-     *
-     * @return Icon|null
-     */
-    private function getIcon(Item $item, MetaModel $metaModel, DefinitionMapper $mapper)
-    {
-        if ($this->model->customIcon == 'attribute') {
-            $iconAttribute = $metaModel->getAttributeById($this->model->iconAttribute);
-            $iconId        = $item->get($iconAttribute->getColName());
-        } elseif ($this->model->customIcon == 'fix') {
-            $iconId = $this->model->icon;
-        } else {
-            return null;
-        }
-
-        $iconModel = IconModel::findActiveByPK($iconId);
-
-        if (!$iconModel) {
-            return null;
-        }
-
-        return $mapper->handle($iconModel);
-    }
-
 }

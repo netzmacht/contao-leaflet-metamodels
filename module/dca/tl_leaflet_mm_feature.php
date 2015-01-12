@@ -21,11 +21,12 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
     (
         'sorting' => array
         (
-            'mode'                    => 1,
+            'mode'                    => 4,
             'fields'                  => array('title'),
             'flag'                    => 1,
             'panelLayout'             => 'limit',
-            'headerFields'            => array('title', 'type'),
+            'headerFields'            => array('title', 'type', 'metamodel'),
+            'child_record_callback'   => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'generateRow'),
         ),
         'label' => array
         (
@@ -34,13 +35,6 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
         ),
         'global_operations' => array
         (
-            'icons' => array
-            (
-                'label'               => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['icons'],
-                'href'                => 'table=tl_leaflet_icon',
-                'icon'                => 'system/modules/leaflet/assets/img/icons.png',
-                'attributes'          => 'onclick="Backend.getScrollOffset();"'
-            ),
             'all' => array
             (
                 'label'               => &$GLOBALS['TL_LANG']['MSC']['all'],
@@ -99,14 +93,33 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
             'config' => array(),
             'active' => array('active'),
         ),
-        'fixed extends default' => array(
-            'config' => array('stroke', 'fill'),
+        'marker extends default' => array(
+            'config' => array('coordinates'),
+            'popup before active'       => array('addPopup', 'renderSettings'),
+            'icon before active'        => array('icon', 'iconAttribute')
         ),
+
+        'geojson extends default' => array(
+            '+title' => array('geojsonAttribute'),
+        ),
+        
+        'reference extends default' =>  array(
+            'config' => array('referenceType', 'referenceAttribute', 'standalone'),
+            'popup before active'       => array('addPopup', 'renderSettings'),
+            'icon before active'        => array('icon', 'iconAttribute'),
+            'style before active'       => array('style', 'styleAttribute')
+        )
     ),
 
-    'metasubpalettes' => array(
-        'stroke'    => array('color', 'weight', 'opacity', 'dashArray', 'lineCap', 'lineJoin'),
-        'fill'      => array('fillColor', 'fillOpacity',)
+    'metasubselectpalettes' => array(
+        'coordinates' => array(
+            'single'   => array('coordinatesAttribute'),
+            'separate' => array('latitudeAttribute', 'longitudeAttribute'),
+        ),
+
+        'addPopup' => array(
+            'attribute' => array('popupAttribute'),
+        ),
     ),
 
     'fields' => array
@@ -158,22 +171,38 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
                 'submitOnChange'     => true,
                 'chosen'             => true,
             ),
-            'options'   => &$GLOBALS['LEAFLET_MM_FEATURES'],
+            'options'   => array_keys($GLOBALS['LEAFLET_MM_FEATURES']),
             'reference' => &$GLOBALS['TL_LANG']['leaflet_mm_feature'],
             'sql'       => "varchar(32) NOT NULL default ''"
         ),
-        'longitudeAttribute'    => array
+        'coordinates'                  => array
         (
-            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['longitudeAttribute'],
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['coordinates'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'eval'      => array(
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'submitOnChange'     => true,
+                'chosen'             => true,
+            ),
+            'options'   => array('single', 'separate'),
+            'reference' => &$GLOBALS['TL_LANG']['leaflet_mm_feature'],
+            'sql'       => "varchar(8) NOT NULL default ''"
+        ),
+        'coordinatesAttribute'    => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['coordinatesAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
             'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['longitudeAttribute'],
             'eval'             => array(
                 'mandatory'          => false,
-                'tl_class'           => 'w50 clr',
+                'tl_class'           => 'w50',
                 'includeBlankOption' => true,
-                'helpwizard'         => true,
+                'chosen'             => true,
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
@@ -185,25 +214,38 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
             'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['latitudeAttribute'],
             'eval'             => array(
-                'mandatory'          => false,
+                'mandatory'          => true,
                 'tl_class'           => 'w50 clr',
                 'includeBlankOption' => true,
-                'helpwizard'         => true,
+                'chosen'             => true,
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
-        'popupAttribute'    => array
+        'longitudeAttribute'    => array
         (
-            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['popupAttribute'],
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['longitudeAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
             'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
-            'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['latitudeAttribute'],
             'eval'             => array(
-                'mandatory'          => false,
-                'tl_class'           => 'w50 clr',
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
                 'includeBlankOption' => true,
-                'helpwizard'         => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'geojsonAttribute'    => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['geojsonAttribute'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
+            'eval'             => array(
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
@@ -216,9 +258,9 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['renderSettings'],
             'eval'             => array(
                 'mandatory'          => false,
-                'tl_class'           => 'w50 clr',
+                'tl_class'           => 'w50',
                 'includeBlankOption' => true,
-                'helpwizard'         => true,
+                'chosen'             => true,
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
@@ -233,6 +275,144 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_feature'] = array
             'flag'      => 12,
             'eval'      => array('tl_class' => 'w50'),
             'sql'       => "char(1) NOT NULL default ''"
+        ),
+        'addPopup'                => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['addPopup'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'filter'    => true,
+            'sorting'   => true,
+            'search'    => false,
+            'options'   => array('attribute', 'render'),
+            'flag'      => 12,
+            'eval'      => array('tl_class' => 'w50', 'includeBlankOption' => true, 'submitOnChange' => true),
+            'sql'       => "varchar(16) NOT NULL default ''"
+        ),
+        'popupAttribute'    => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['popupAttribute'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
+            'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['latitudeAttribute'],
+            'eval'             => array(
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'customIcon'                  => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['customIcon'],
+            'exclude'   => true,
+            'inputType' => 'select',
+            'eval'      => array(
+                'mandatory'          => false,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'submitOnChange'     => true,
+                'chosen'             => true,
+            ),
+            'options' => array('attribute', 'icon'),
+            'sql'     => "varchar(10) NOT NULL default ''"
+        ),
+        'icon'          => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['icon'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\Dca\Marker', 'getIcons'),
+            'eval'             => array(
+                'mandatory'          => false,
+                'tl_class'           => 'w50 clr',
+                'chosen'             => true,
+                'includeBlankOption' => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'",
+        ),
+        'iconAttribute' => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['iconAttribute'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
+            'eval'             => array(
+                'mandatory'          => false,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'referenceType'    => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['referenceType'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options' => array('layer', 'marker', 'vector'),
+            'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['referenceTypes'],
+            'eval'             => array(
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "varchar(16) NOT NULL default ''"
+        ),
+        'referenceAttribute'    => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['referenceAttribute'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
+            'eval'             => array(
+                'mandatory'          => true,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'standalone' => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['standalone'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'default'   => false,
+            'eval'      => array('tl_class' => 'w50', 'submitOnChange' => false, 'isBoolean' => true),
+            'sql'       => "char(1) NOT NULL default ''"
+        ),
+        'style'          => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['style'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\Dca\Vector', 'getStyles'),
+            'eval'             => array(
+                'mandatory'          => false,
+                'tl_class'           => 'w50 clr',
+                'chosen'             => true,
+                'includeBlankOption' => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'",
+        ),
+        'styleAttribute' => array
+        (
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['styleAttribute'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Feature', 'getAttributes'),
+            'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_feature']['longitudeAttribute'],
+            'eval'             => array(
+                'mandatory'          => false,
+                'tl_class'           => 'w50',
+                'includeBlankOption' => true,
+                'chosen'             => true,
+            ),
+            'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
     ),
 );
