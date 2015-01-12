@@ -23,6 +23,7 @@ use Netzmacht\Contao\Leaflet\MetaModels\Feature\LoadsReferred;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\FeatureModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
+use Netzmacht\Javascript\Type\Value\Expression;
 use Netzmacht\LeafletPHP\Definition;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
@@ -92,6 +93,16 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         }
 
         $this->applyFeatures($definition, $model, $mapper, $bounds, $referred);
+
+        if ($definition instanceof GeoJson || $definition instanceof GeoJsonAjax) {
+            if ($model->pointToLayer) {
+                $definition->setPointToLayer(new Expression($model->pointToLayer));
+            }
+
+            if ($model->onEachFeature) {
+                $definition->setOnEachFeature(new Expression($model->onEachFeature));
+            }
+        }
     }
 
     /**
