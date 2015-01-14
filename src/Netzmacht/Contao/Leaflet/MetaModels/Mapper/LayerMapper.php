@@ -11,7 +11,6 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Mapper;
 
-use ContaoCommunityAlliance\UrlBuilder\UrlBuilder;
 use MetaModels\Factory;
 use MetaModels\Filter\Setting\Factory as FilterSettingFactory;
 use MetaModels\Filter\Setting\ICollection;
@@ -27,7 +26,7 @@ use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
 use Netzmacht\Javascript\Type\Value\Expression;
 use Netzmacht\LeafletPHP\Definition;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
-use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
+use Netzmacht\LeafletPHP\Definition\Layer;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
 
@@ -65,10 +64,43 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     protected function getClassName(\Model $model, DefinitionMapper $mapper, LatLngBounds $bounds = null)
     {
         if ($model->deferred) {
-            return 'Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax';
+            return 'Netzmacht\LeafletPHP\Plugins\Omnivore\GeoJson';
         }
 
         return parent::getClassName($model, $mapper, $bounds);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function buildConstructArguments(
+        \Model $model,
+        DefinitionMapper $mapper,
+        LatLngBounds $bounds = null,
+        $elementId = null
+    ) {
+        if ($model->deferred) {
+            $options = array();
+
+            if ($model->pointToLayer) {
+                $options['pointToLayer'] = new Expression($model->pointToLayer);
+            }
+
+            if ($model->onEachFeature) {
+                $options['onEachFeature'] = new Expression($model->onEachFeature);
+            }
+
+            if (!empty($options)) {
+                $layer = new GeoJson($this->getElementId($model, $elementId) . '_1');
+                $layer->setOptions($options);
+
+                return array($this->getElementId($model, $elementId), RequestUrl::create($model->id), array(), $layer);
+            }
+
+            return array($this->getElementId($model, $elementId), RequestUrl::create($model->id));
+        }
+
+        return parent::buildConstructArguments($model, $mapper, $bounds, $elementId);
     }
 
     /**
@@ -193,7 +225,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      *
      * It also recognize the Bounds of the map if defined (not implemented yet).
      *
-     * @param LayerGroup       $definition The layer group.
+     * @param Layer            $definition The layer group.
      * @param LayerModel       $model      The layer model.
      * @param DefinitionMapper $mapper     The definition mapper.
      * @param LatLngBounds     $bounds     The bounds.
@@ -202,7 +234,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      * @return void
      */
     protected function applyFeatures(
-        LayerGroup $definition,
+        Layer $definition,
         LayerModel $model,
         DefinitionMapper $mapper,
         LatLngBounds $bounds = null,
@@ -214,7 +246,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         foreach ($items as $item) {
             foreach ($features as $feature) {
                 if ($deferred && !$feature instanceof LoadsReferred) {
-                    $feature->apply($item, $definition, $mapper, $bounds);
+                    $feature->apply($item, $definition, $mapper, $bounds, $model);
                 }
             }
         }

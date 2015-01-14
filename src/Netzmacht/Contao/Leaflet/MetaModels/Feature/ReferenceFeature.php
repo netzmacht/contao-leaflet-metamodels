@@ -18,11 +18,14 @@ use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 use Netzmacht\Contao\Leaflet\Model\VectorModel;
+use Netzmacht\Javascript\Type\Value\Expression;
+use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\HasPopup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
+use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
 
 /**
  * Class ReferenceFeature handles the reference feature of a MetaModel item.
@@ -36,7 +39,7 @@ class ReferenceFeature extends AbstractFeature
     /**
      * {@inheritdoc}
      */
-    public function apply(IItem $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null)
+    public function apply(IItem $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null, $parentModel = null)
     {
         $model = $this->fetchReferenceModel($item);
 
@@ -46,6 +49,12 @@ class ReferenceFeature extends AbstractFeature
             $this->applyPopup($item, $definition);
             $this->applyMarker($item, $mapper, $definition);
             $this->applyStyle($item, $mapper, $definition);
+
+            if ($definition instanceof GeoJsonAjax || $definition instanceof GeoJson) {
+                if ($parentModel->onEachFeature) {
+                    $definition->setOnEachFeature(new Expression($parentModel->onEachFeature));
+                }
+            }
 
             $parentLayer->addLayer($definition);
         }
