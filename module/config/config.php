@@ -33,7 +33,17 @@ $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
     'icon'       => 'system/modules/leaflet-metamodels/assets/img/layer.png',
     'metamodels' => true,
     'label'    => function ($row, $label) {
-        return $label;
+        $metaModel = \MetaModels\Factory::byId($row['metamodel']);
+
+        if (!$metaModel) {
+            return $label;
+        }
+
+        return $label . sprintf(
+            ' <span><a href="%s" class="tl_gray">(%s)</a></span>',
+            \Backend::addToUrl('do=metamodel_' . $metaModel->getTableName()),
+            $metaModel->getName()
+        );
     }
 );
 
