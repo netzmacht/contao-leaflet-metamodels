@@ -24,7 +24,7 @@ use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
  */
-interface LoadsReferred
+interface LoadsDeferred
 {
     /**
      * Apply feature to an item.

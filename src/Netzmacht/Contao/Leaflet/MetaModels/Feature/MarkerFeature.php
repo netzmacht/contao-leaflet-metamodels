@@ -24,7 +24,7 @@ use Netzmacht\LeafletPHP\Definition\UI\Marker;
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
  */
-class MarkerFeature extends AbstractFeature implements LoadsReferred
+class MarkerFeature extends AbstractFeature implements LoadsDeferred
 {
     /**
      * {@inheritdoc}

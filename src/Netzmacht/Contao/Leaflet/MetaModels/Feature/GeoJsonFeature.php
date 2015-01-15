@@ -27,7 +27,7 @@ use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
  */
-class GeoJsonFeature extends AbstractFeature implements LoadsReferred
+class GeoJsonFeature extends AbstractFeature implements LoadsDeferred
 {
     /**
      * {@inheritdoc}

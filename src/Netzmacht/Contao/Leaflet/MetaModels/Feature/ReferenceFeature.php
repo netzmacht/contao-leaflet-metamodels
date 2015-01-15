@@ -39,8 +39,13 @@ class ReferenceFeature extends AbstractFeature
     /**
      * {@inheritdoc}
      */
-    public function apply(IItem $item, LayerGroup $parentLayer, DefinitionMapper $mapper, LatLngBounds $bounds = null, $parentModel = null)
-    {
+    public function apply(
+        IItem $item,
+        LayerGroup $parentLayer,
+        DefinitionMapper $mapper,
+        LatLngBounds $bounds = null,
+        $parentModel = null
+    ) {
         $model = $this->fetchReferenceModel($item);
 
         if ($model) {
@@ -50,7 +55,7 @@ class ReferenceFeature extends AbstractFeature
             $this->applyMarker($item, $mapper, $definition);
             $this->applyStyle($item, $mapper, $definition);
 
-            if ($definition instanceof GeoJsonAjax || $definition instanceof GeoJson) {
+            if ($definition instanceof GeoJson) {
                 if ($parentModel->onEachFeature) {
                     $definition->setOnEachFeature(new Expression($parentModel->onEachFeature));
                 }

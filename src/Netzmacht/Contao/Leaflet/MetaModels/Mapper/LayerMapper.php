@@ -19,7 +19,7 @@ use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Mapper\GeoJsonMapper;
 use Netzmacht\Contao\Leaflet\Mapper\Layer\AbstractLayerMapper;
 use Netzmacht\Contao\Leaflet\MetaModels\Feature;
-use Netzmacht\Contao\Leaflet\MetaModels\Feature\LoadsReferred;
+use Netzmacht\Contao\Leaflet\MetaModels\Feature\LoadsDeferred;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\FeatureModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
@@ -114,17 +114,9 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     ) {
         parent::build($definition, $model, $mapper, $bounds);
 
-        $referred = false;
+        $this->applyFeatures($definition, $model, $mapper, $bounds, false);
 
-        if ($definition instanceof GeoJsonAjax) {
-            $definition->setUrl(RequestUrl::create($model->id));
-
-            $referred = true;
-        }
-
-        $this->applyFeatures($definition, $model, $mapper, $bounds, $referred);
-
-        if ($definition instanceof GeoJson || $definition instanceof GeoJsonAjax) {
+        if ($definition instanceof GeoJson) {
             if ($model->pointToLayer) {
                 $definition->setPointToLayer(new Expression($model->pointToLayer));
             }
@@ -146,7 +138,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 
         foreach ($items as $item) {
             foreach ($features as $feature) {
-                if ($feature instanceof LoadsReferred) {
+                if ($feature instanceof LoadsDeferred) {
                     $feature->applyGeoJson($item, $collection, $mapper, $bounds);
                 }
             }
@@ -245,7 +237,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 
         foreach ($items as $item) {
             foreach ($features as $feature) {
-                if ($deferred && !$feature instanceof LoadsReferred) {
+                if (!$model->deferred && !$deferred || !$feature instanceof LoadsDeferred) {
                     $feature->apply($item, $definition, $mapper, $bounds, $model);
                 }
             }
