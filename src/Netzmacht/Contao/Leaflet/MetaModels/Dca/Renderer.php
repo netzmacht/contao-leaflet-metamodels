@@ -21,7 +21,7 @@ use Netzmacht\Contao\Leaflet\Model\StyleModel;
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Dca
  */
-class Feature
+class Renderer
 {
     /**
      * Get all attribute ids of a metamodel.

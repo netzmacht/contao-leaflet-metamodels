@@ -64,7 +64,7 @@ class Layer
     }
 
     /**
-     * Generate the metamodels feature button.
+     * Generate the metamodels renderer button.
      *
      * @param array  $row        Current row.
      * @param string $href       The button href.
@@ -75,7 +75,7 @@ class Layer
      *
      * @return string
      */
-    public function generateFeatureButton($row, $href, $label, $title, $icon, $attributes)
+    public function generateRendererButton($row, $href, $label, $title, $icon, $attributes)
     {
         if (empty($this->layers[$row['type']]['metamodels'])) {
             return '';

@@ -26,13 +26,18 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
  * @property mixed|null coordinatesAttribute
  * @property mixed|null type
  * @property mixed|null icon
+ * @property mixed|null referenceAttribute
+ * @property mixed|null referenceType
+ * @property mixed|null standalone
+ * @property mixed|null styleAttribute
+ * @property mixed|null deferred
  */
-class FeatureModel extends \Model
+class RendererModel extends \Model
 {
     /**
      * The table name.
      *
      * @var string
      */
-    protected static $strTable = 'tl_leaflet_mm_feature';
+    protected static $strTable = 'tl_leaflet_mm_renderer';
 }

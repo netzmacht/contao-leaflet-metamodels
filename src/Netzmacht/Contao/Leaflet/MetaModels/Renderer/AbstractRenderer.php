@@ -9,43 +9,107 @@
  *
  */
 
-namespace Netzmacht\Contao\Leaflet\MetaModels\Feature;
+namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
-use MetaModels\Attribute\IAttribute;
-use MetaModels\IItem as ITem;
-use MetaModels\IMetaModel;
+use MetaModels\Attribute\IAttribute as Attribute;
+use MetaModels\IItems;
+use MetaModels\IMetaModel as MetaModel;
+use MetaModels\IItem as Item;
 use MetaModels\Items;
 use MetaModels\Render\Setting\Factory as RenderSettingFactory;
 use MetaModels\Render\Setting\ICollection as RenderSetting;
 use MetaModels\Render\Template;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
-use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
+use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\Model\IconModel;
+use Netzmacht\Contao\Leaflet\Model\LayerModel;
+use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Type\Icon;
+use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
 /**
- * Class AbstractFeature is the base implementation of the metamodels feature interface.
+ * Class AbstractFeature is the base implementation of the MetaModels item renderer interface.
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
  */
-abstract class AbstractFeature implements Renderer
+abstract class AbstractRenderer implements Renderer
 {
     /**
-     * The feature model.
+     * The renderer model.
      *
      * @var RendererModel
      */
     protected $model;
 
     /**
+     * The layer model of the parent layer.
+     *
+     * @var LayerModel
+     */
+    protected $layerModel;
+
+    /**
+     * List of preloaded icons.
+     *
+     * @var Icon[]
+     */
+    protected $icons = array();
+
+    /**
+     * Fallback icon.
+     *
+     * @var Icon|null
+     */
+    protected $fallbackIcon;
+
+    /**
      * Construct.
      *
-     * @param RendererModel $model The feature model.
+     * @param RendererModel $model      The feature model.
+     * @param LayerModel    $layerModel The layer model.
      */
-    public function __construct(RendererModel $model)
+    public function __construct(RendererModel $model, LayerModel $layerModel)
     {
-        $this->model = $model;
+        $this->model      = $model;
+        $this->layerModel = $layerModel;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function prepare(
+        MetaModel $metaModel,
+        IItems $items,
+        DefinitionMapper $mapper,
+        LatLngBounds $bounds = null,
+        $deferred = false
+    ) {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadData(
+        Item $item,
+        FeatureCollection $featureCollection,
+        DefinitionMapper $mapper,
+        $parentId,
+        LatLngBounds $bounds = null,
+        $deferred = false
+    ) {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function loadLayers(
+        Item $item,
+        GeoJson $dataLayer,
+        DefinitionMapper $mapper,
+        LatLngBounds $bounds = null
+    ) {
     }
 
     /**
@@ -115,44 +179,14 @@ abstract class AbstractFeature implements Renderer
         return $default;
     }
 
-
-    /**
-     * Get the icon for the MetaModel item.
-     *
-     * @param Item             $item   The MetaModel item.
-     * @param DefinitionMapper $mapper The definition mapper.
-     *
-     * @return Icon|null
-     */
-    protected function getIcon(Item $item, DefinitionMapper $mapper)
-    {
-        $iconModel = null;
-
-        if ($this->model->iconAttribute) {
-            $iconAttribute = $this->getAttribute('iconAttribute', $item);
-            $iconId        = $item->get($iconAttribute->getColName());
-            $iconModel     = IconModel::findActiveByPK($iconId);
-        }
-
-        if (!$iconModel && $this->model->icon) {
-            $iconModel = IconModel::findByPk($this->model->icon);
-        }
-
-        if (!$iconModel) {
-            return null;
-        }
-
-        return $mapper->handle($iconModel);
-    }
-
     /**
      * Get the render setting.
      *
-     * @param IMetaModel $metaModel The MetaModel.
+     * @param MetaModel $metaModel The MetaModel.
      *
      * @return RenderSetting|null
      */
-    protected function getRenderSettings(IMetaModel $metaModel)
+    protected function getRenderSettings(MetaModel $metaModel)
     {
         if ($this->model->renderSettings) {
             $settings = RenderSettingFactory::byId($metaModel, $this->model->renderSettings);
@@ -169,11 +203,71 @@ abstract class AbstractFeature implements Renderer
      * @param string $column The name of the attribute id.
      * @param Item   $item   The metamodel item.
      *
-     * @return IAttribute
+     * @return Attribute
      */
     protected function getAttribute($column, Item $item)
     {
         return $item->getMetaModel()->getAttributeById($this->model->$column);
+    }
+
+    /**
+     * Get the icon for the MetaModel item.
+     *
+     * @param int $itemId The MetaModel item id.
+     *
+     * @return Icon|null
+     */
+    protected function getIcon($itemId)
+    {
+        if (isset($this->icons[$itemId])) {
+            return $this->icons[$itemId];
+        }
+
+        return $this->fallbackIcon;
+    }
+
+    /**
+     * @param                  $values
+     * @param DefinitionMapper $mapper
+     */
+    protected function preLoadIcons(array $values, DefinitionMapper $mapper)
+    {
+        $collection = IconModel::findMultipleByIds($values);
+        if (!$collection) {
+            return;
+        }
+
+        foreach ($collection as $model) {
+            if (!$model->active) {
+                continue;;
+            }
+
+            $icon = $mapper->handle($model);
+
+            if (!$icon) {
+                continue;
+            }
+
+            foreach ($values as $itemId => $iconId) {
+                if ($iconId == $model->id) {
+                    $this->icons[$itemId] = $icon;
+                }
+            }
+        }
+    }
+
+    /**
+     * @param DefinitionMapper $mapper
+     */
+    protected function loadFallbackIcon(DefinitionMapper $mapper)
+    {
+        if ($this->model->icon) {
+            $iconModel = IconModel::findByPk($this->model->icon);
+
+            if ($iconModel) {
+                $this->fallbackIcon = $mapper->handle($iconModel);
+            }
+        }
     }
 
     /**
@@ -189,14 +283,14 @@ abstract class AbstractFeature implements Renderer
      * 2. $GLOBALS['TL_LANG']['MSC'][<mm tablename>]['details']
      * 3. $GLOBALS['TL_LANG']['MSC']['details']
      *
-     * @param IMetaModel $metaModel The MetaModel.
+     * @param MetaModel $metaModel The MetaModel.
      *
      * @return string
      * @see    MetaModels\ItemList::getDetailsCaption
      * @SuppressWarnings(PHPMD.Superglobals)
      * @SuppressWarnings(PHPMD.CamelCaseVariableName)
      */
-    protected function getDetailsCaption(IMetaModel $metaModel)
+    protected function getDetailsCaption(MetaModel $metaModel)
     {
         $tableName = $metaModel->getTableName();
         if (isset($this->objView)

@@ -12,17 +12,17 @@
 /*
  * Backend Module.
  */
-$GLOBALS['BE_MOD']['leaflet']['leaflet_layer']['tables'][] = 'tl_leaflet_mm_feature';
+$GLOBALS['BE_MOD']['leaflet']['leaflet_layer']['tables'][] = 'tl_leaflet_mm_renderer';
 
 /*
  * Register models.
  */
-$GLOBALS['TL_MODELS']['tl_leaflet_mm_feature'] = 'Netzmacht\Contao\Leaflet\MetaModels\Model\FeatureModel';
+$GLOBALS['TL_MODELS']['tl_leaflet_mm_renderer'] = 'Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel';
 
 /*
  * Add leaflet mapper.
  */
-$GLOBALS['LEAFLET_MAPPERS'][] = 'Netzmacht\Contao\Leaflet\MetaModels\Mapper\LayerMapper';
+$GLOBALS['LEAFLET_MAPPERS'][] = 'Netzmacht\Contao\Leaflet\MetaModels\LayerMapper';
 
 /*
  * Add metamodels layer.
@@ -41,15 +41,17 @@ $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
 
         return $label . sprintf(
             ' <span><a href="%s" class="tl_gray">(%s)</a></span>',
-            \Backend::addToUrl('do=metamodel_' . $metaModel->getTableName()),
+            \Backend::addToUrl(
+                sprintf('do=metamodel_%s&amp;table=%s', $metaModel->getTableName(), $metaModel->getTableName())
+            ),
             $metaModel->getName()
         );
     }
 );
 
 /*
- * Metamodels layer features
+ * Metamodels layer renderers
  */
-$GLOBALS['LEAFLET_MM_FEATURES']['marker']    = 'Netzmacht\Contao\Leaflet\MetaModels\Feature\MarkerFeature';
-$GLOBALS['LEAFLET_MM_FEATURES']['geojson']   = 'Netzmacht\Contao\Leaflet\MetaModels\Feature\GeoJsonFeature';
-$GLOBALS['LEAFLET_MM_FEATURES']['reference'] = 'Netzmacht\Contao\Leaflet\MetaModels\Feature\ReferenceFeature';
+$GLOBALS['LEAFLET_MM_RENDERER']['marker']    = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\MarkerRenderer';
+$GLOBALS['LEAFLET_MM_RENDERER']['geojson']   = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\GeoJsonRenderer';
+$GLOBALS['LEAFLET_MM_RENDERER']['reference'] = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\ReferenceRenderer';

@@ -16,16 +16,16 @@ use MetaModels\Item;
 use Netzmacht\Contao\Leaflet\Definition\Style;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
+use Netzmacht\Contao\Leaflet\Model\MarkerModel;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 use Netzmacht\Contao\Leaflet\Model\VectorModel;
-use Netzmacht\Javascript\Type\Value\Expression;
+use Netzmacht\JavascriptBuilder\Type\Expression;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Group\LayerGroup;
 use Netzmacht\LeafletPHP\Definition\HasPopup;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
-use Netzmacht\LeafletPHP\Plugins\Ajax\GeoJsonAjax;
 
 /**
  * Class ReferenceFeature handles the reference feature of a MetaModel item.
@@ -77,67 +77,22 @@ class ReferenceFeature extends AbstractFeature
         $reference = $this->getAttribute('referenceAttribute', $item)->getColName();
         $reference = $item->get($reference);
 
+        if (is_array($reference)) {
+            $reference = $reference['id'];
+        }
+
         switch ($this->model->referenceType) {
-            case 'layer':
+            case 'reflayer':
                 return LayerModel::findActiveByPK($reference);
 
-            case 'vector':
+            case 'refvector':
                 return VectorModel::findActiveByPK($reference);
 
-            case 'marker':
-                return VectorModel::findActiveByPK($reference);
+            case 'refmarker':
+                return MarkerModel::findActiveByPK($reference);
 
             default:
                 return null;
-        }
-    }
-
-    /**
-     * Get vector style.
-     *
-     * @param Item             $item   The MetaModel item.
-     * @param DefinitionMapper $mapper The definition mapper.
-     *
-     * @return Style|null
-     */
-    protected function getStyle(Item $item, DefinitionMapper $mapper)
-    {
-        $iconModel = null;
-
-        if ($this->model->iconAttribute) {
-            $iconAttribute = $this->getAttribute('styleAttribute', $item);
-            $iconId        = $item->get($iconAttribute->getColName());
-            $iconModel     = StyleModel::findActiveByPK($iconId);
-        }
-
-        if (!$iconModel && $this->model->icon) {
-            $iconModel = StyleModel::findByPk($this->model->icon);
-        }
-
-        if (!$iconModel) {
-            return null;
-        }
-
-        return $mapper->handle($iconModel);
-    }
-
-    /**
-     * Apply the popup.
-     *
-     * @param IItem $item       The MetaModel item.
-     * @param mixed $definition The definition.
-     *
-     * @return void
-     */
-    protected function applyPopup(IItem $item, $definition)
-    {
-        if ($definition instanceof HasPopup) {
-            $settings = $this->getRenderSettings($item->getMetaModel());
-            $popup    = $this->getPopupContent($item, $settings);
-
-            if ($popup) {
-                $definition->bindPopup($popup);
-            }
         }
     }
 
@@ -179,6 +134,35 @@ class ReferenceFeature extends AbstractFeature
                 $style->apply($definition);
             }
         }
+    }
+    
+    /**
+     * Get vector style.
+     *
+     * @param Item             $item   The MetaModel item.
+     * @param DefinitionMapper $mapper The definition mapper.
+     *
+     * @return Style|null
+     */
+    protected function getStyle(Item $item, DefinitionMapper $mapper)
+    {
+        $styleModel = null;
+
+        if ($this->model->styleAttribute) {
+            $styleAttribute = $this->getAttribute('styleAttribute', $item);
+            $styleId        = $item->get($styleAttribute->getColName());
+            $styleModel     = StyleModel::findActiveByPK($styleId);
+        }
+
+        if (!$styleModel && $this->model->style) {
+            $styleModel = StyleModel::findByPk($this->model->style);
+        }
+
+        if (!$styleModel) {
+            return null;
+        }
+
+        return $mapper->handle($styleModel);
     }
 
     /**
