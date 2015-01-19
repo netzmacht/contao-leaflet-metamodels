@@ -24,7 +24,7 @@ use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Renderer
  */
-class GeoJsonRenderer extends  AbstractRenderer
+class GeoJsonRenderer extends AbstractRenderer
 {
     /**
      * {@inheritdoc}

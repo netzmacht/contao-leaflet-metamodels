@@ -96,11 +96,10 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
                 return;
             }
 
-            $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $bounds);
-
             /** @var GeoJson $layer */
             $layer      = $definition->getCustomLayer();
             $collection = $layer->getInitializationData();
+            $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $bounds);
 
             foreach ($items as $item) {
                 foreach ($renderers as $renderer) {
@@ -133,12 +132,12 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     /**
      * Get Renderer.
      *
-     * @param LayerModel       $model
-     * @param MetaModel        $metaModel
-     * @param Items            $items
-     * @param DefinitionMapper $mapper
-     * @param LatLngBounds     $bounds
-     * @param bool             $deferred
+     * @param LayerModel       $model     The layer model.
+     * @param MetaModel        $metaModel The MetaModel.
+     * @param Items            $items     The MetaModel items.
+     * @param DefinitionMapper $mapper    The definition mapper.
+     * @param LatLngBounds     $bounds    The requested bounds.
+     * @param bool             $deferred  Load for deferred mode.
      *
      * @return Renderer[]
      */
@@ -177,7 +176,8 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     /**
      * Get all MetaModel items.
      *
-     * @param LayerModel $model The layer model.
+     * @param MetaModel  $metaModel The MetaModel.
+     * @param LayerModel $model     The layer model.
      *
      * @return Items
      */
@@ -185,8 +185,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         MetaModel $metaModel,
         LayerModel $model
         // , LatLngBounds $bounds = null
-    )
-    {
+    ) {
         $filter = $metaModel->getEmptyFilter();
 
         $filterSetting = FilterSettingFactory::byId($model->metamodel_filtering);
@@ -208,8 +207,6 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         );
     }
 
-
-
     /**
      * Create a feature.
      *
@@ -217,6 +214,8 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      * @param LayerModel    $layerModel    The layer model.
      *
      * @return Renderer
+     * @SuppressWarnings(PHPMD.Superglobals)
+     * @throws \RuntimeException If the renderer does not exists.
      */
     private function createRenderer(RendererModel $rendererModel, LayerModel $layerModel)
     {
@@ -255,11 +254,13 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     }
 
     /**
-     * @param \Model $model
+     * Extract layer options from the model.
+     *
+     * @param LayerModel $model The layer model.
      *
      * @return array
      */
-    protected function getLayerOptions(\Model $model)
+    protected function getLayerOptions(LayerModel $model)
     {
         $options = array();
 

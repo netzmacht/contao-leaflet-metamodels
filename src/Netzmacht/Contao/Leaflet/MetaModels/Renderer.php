@@ -69,10 +69,10 @@ interface Renderer
     /**
      * Load layers from the item and assign them to the parent layer.
      *
-     * @param Item             $item        Current meta model item.
-     * @param GeoJson          $dataLayer   The data layer.
-     * @param DefinitionMapper $mapper      The definition mapper.
-     * @param LatLngBounds     $bounds      Optional LatLng bounds.
+     * @param Item             $item      Current meta model item.
+     * @param GeoJson          $dataLayer The data layer.
+     * @param DefinitionMapper $mapper    The definition mapper.
+     * @param LatLngBounds     $bounds    Optional LatLng bounds.
      *
      * @return void
      */

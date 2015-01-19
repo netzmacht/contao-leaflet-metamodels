@@ -28,9 +28,16 @@ use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
 
+/**
+ * Class ReferenceRenderer renders a metamodel items attribute as reference to a marker, layer or vector.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Renderer
+ */
 class ReferenceRenderer extends AbstractRenderer
 {
     /**
+     * List of references. A reference can be a layer, marker or vector definition.
+     *
      * @var Layer[]|Marker[]|Vector[]
      */
     private $references = array();
@@ -43,6 +50,8 @@ class ReferenceRenderer extends AbstractRenderer
     private $styles = array();
 
     /**
+     * Fallback style.
+     *
      * @var Style|null
      */
     private $fallbackStyle;
@@ -107,6 +116,9 @@ class ReferenceRenderer extends AbstractRenderer
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function loadData(
         Item $item,
         FeatureCollection $featureCollection,
@@ -127,7 +139,7 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * Build the definition.
      *
-     * @param Item $item
+     * @param Item $item The Metamodel item.
      *
      * @return Layer|Marker|Vector|null
      */
@@ -170,11 +182,7 @@ class ReferenceRenderer extends AbstractRenderer
                 continue;
             }
 
-            $elementId = null;
-            if ($this->model->standalone) {
-                $elementId = sprintf('%s_%s_%s', $this->layerModel->alias, $this->model->alias, $model->id);
-            }
-
+            $elementId = $this->getReferenceId($model);
             $reference = $mapper->handle($model, $bounds, $elementId);
 
             if (!$reference) {
@@ -190,6 +198,8 @@ class ReferenceRenderer extends AbstractRenderer
     }
 
     /**
+     * Get class of the reference model.
+     *
      * @return string
      */
     private function getReferenceModelClass()
@@ -208,15 +218,25 @@ class ReferenceRenderer extends AbstractRenderer
     }
 
     /**
-     * @param MetaModel $metaModel
-     * @param Items     $items
-     * @param Attribute $reference
-     * @param array     $values
-     * @param array     $icons
-     * @param           $styles
+     * Prepare used values.
+     *
+     * @param MetaModel $metaModel The meta model.
+     * @param Items     $items     The meta model items list.
+     * @param Attribute $reference The reference attribute.
+     * @param array     $values    The reference values.
+     * @param array     $icons     The used icons.
+     * @param array     $styles    The used styles.
+     *
+     * @return void
      */
-    protected function prepareValues(MetaModel $metaModel, Items $items, Attribute $reference, &$values, &$icons, &$styles)
-    {
+    protected function prepareValues(
+        MetaModel $metaModel,
+        Items $items,
+        Attribute $reference,
+        &$values,
+        &$icons,
+        &$styles
+    ) {
         $icon  = $metaModel->getAttributeById($this->model->iconAttribute);
         $style = $metaModel->getAttributeById($this->model->styleAttribute);
 
@@ -225,14 +245,14 @@ class ReferenceRenderer extends AbstractRenderer
             $itemId = $item->get('id');
 
             if ($value) {
-                $values[$itemId] = is_array($value) ? $value['id'] : $value;
+                $values[$itemId] = $this->getAttributeValue($value);
             }
 
             if ($icon) {
                 $value = $item->get($icon->getColName());
 
                 if ($value) {
-                    $icons[$itemId] = is_array($value) ? $value['id'] : $value;
+                    $icons[$itemId] = $this->getAttributeValue($value);
                 }
             }
 
@@ -240,17 +260,16 @@ class ReferenceRenderer extends AbstractRenderer
                 $value = $item->get($style->getColName());
 
                 if ($value) {
-                    $styles[$itemId] = is_array($value) ? $value['id'] : $value;
+                    $styles[$itemId] = $this->getAttributeValue($value);
                 }
             }
         }
     }
 
-
     /**
      * Apply the popup.
      *
-     * @param Item $item        The MetaModel item.
+     * @param Item  $item       The MetaModel item.
      * @param mixed $definition The definition.
      *
      * @return void
@@ -270,8 +289,8 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * Apply a marker.
      *
-     * @param Item             $item       The MetaModel item.
-     * @param mixed            $definition The definition.
+     * @param Item  $item       The MetaModel item.
+     * @param mixed $definition The definition.
      *
      * @return void
      */
@@ -288,8 +307,12 @@ class ReferenceRenderer extends AbstractRenderer
 
 
     /**
+     * Pre load styles.
+     *
      * @param array            $values Ids of used styles.
-     * @param DefinitionMapper $mapper
+     * @param DefinitionMapper $mapper The definition mapper.
+     *
+     * @return void
      */
     protected function preLoadStyles(array $values, DefinitionMapper $mapper)
     {
@@ -339,8 +362,11 @@ class ReferenceRenderer extends AbstractRenderer
     }
 
     /**
-     * @param DefinitionMapper $mapper
+     * Load fallback style.
      *
+     * @param DefinitionMapper $mapper The definition mapper.
+     *
+     * @return void
      */
     protected function loadFallbackStyle(DefinitionMapper $mapper)
     {
@@ -367,5 +393,36 @@ class ReferenceRenderer extends AbstractRenderer
         }
 
         return $this->fallbackStyle;
+    }
+
+    /**
+     * Simplify attribute value by reducing array of select values.
+     *
+     * @param mixed $value The given value.
+     *
+     * @return mixed
+     */
+    protected function getAttributeValue($value)
+    {
+        return is_array($value) ? $value['id'] : $value;
+    }
+
+    /**
+     * Get the reference id for the model.
+     *
+     * @param \Model $model The model.
+     *
+     * @return null|string
+     */
+    private function getReferenceId($model)
+    {
+        $elementId = null;
+        if ($this->model->standalone) {
+            $elementId = sprintf('%s_%s_%s', $this->layerModel->alias, $this->model->alias, $model->id);
+
+            return $elementId;
+        }
+
+        return $elementId;
     }
 }

@@ -227,8 +227,12 @@ abstract class AbstractRenderer implements Renderer
     }
 
     /**
-     * @param                  $values
-     * @param DefinitionMapper $mapper
+     * Pre load icon values.
+     *
+     * @param array            $values Icon ids.
+     * @param DefinitionMapper $mapper The definition mapper.
+     *
+     * @return void
      */
     protected function preLoadIcons(array $values, DefinitionMapper $mapper)
     {
@@ -239,7 +243,7 @@ abstract class AbstractRenderer implements Renderer
 
         foreach ($collection as $model) {
             if (!$model->active) {
-                continue;;
+                continue;
             }
 
             $icon = $mapper->handle($model);
@@ -257,7 +261,11 @@ abstract class AbstractRenderer implements Renderer
     }
 
     /**
-     * @param DefinitionMapper $mapper
+     * Load fallback icon.
+     *
+     * @param DefinitionMapper $mapper The definition mapper.
+     *
+     * @return void
      */
     protected function loadFallbackIcon(DefinitionMapper $mapper)
     {

@@ -14,7 +14,7 @@ Features
 This extension provides a [MetaModel](https://github.com/MetaModels) layer for the 
 [Leaflet maps integration for Contao CMS](https://github.com/netzmacht/contao-leaflet-maps). 
 
-Each layer intergrates one specific MetaModel into the Maps. For each layer multiple features can be defined:
+Each layer intergrates one specific MetaModel into the Maps. For each layer multiple renderers can be defined:
  
  - Create a marker for the MetaModel item.
  - Reference to a layer, vector or marker defined in the Leaflet extension.
