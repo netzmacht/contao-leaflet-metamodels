@@ -19,6 +19,7 @@ use Netzmacht\Contao\Leaflet\Definition\Style;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 use Netzmacht\LeafletPHP\Definition\GeoJson\ConvertsToGeoJsonFeature;
+use Netzmacht\LeafletPHP\Definition\GeoJson\Feature;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\HasPopup;
@@ -131,7 +132,12 @@ class ReferenceRenderer extends AbstractRenderer
             $definition = $this->buildDefinition($item);
 
             if ($definition instanceof ConvertsToGeoJsonFeature) {
-                $featureCollection->addFeature($definition->toGeoJsonFeature());
+                $feature = $definition->toGeoJsonFeature();
+
+                if ($feature instanceof Feature && $this->model->affectBounds) {
+                    $feature->setProperty('affectBounds', true);
+                }
+                $featureCollection->addFeature($feature);
             }
         }
     }

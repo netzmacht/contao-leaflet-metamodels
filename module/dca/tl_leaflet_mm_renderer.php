@@ -105,7 +105,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'config'              => array('coordinates'),
             'popup before active' => array('addPopup', 'renderSettings'),
             'icon before active'  => array('icon', 'iconAttribute'),
-            '+active'             => array('deferred')
+            '+active'             => array('deferred', 'affectBounds')
         ),
         'geojson extends default'                => array(
             '+title'  => array('geojsonAttribute'),
@@ -113,10 +113,10 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
         ),
         'reference extends default'              => array(
             'config'  => array('referenceType', 'referenceAttribute', 'standalone'),
-            '+active' => array('deferred')
+            '+active' => array('deferred', 'affectBounds')
         ),
         'referencereflayer extends reference' => array(
-            '-active' => array('deferred')
+            '-active' => array('deferred', 'affectBounds')
         ),
         'referencerefmarkerstandalone extends reference' => array(
             'popup before active' => array('addPopup', 'renderSettings'),
@@ -442,6 +442,15 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
                 'chosen'             => true,
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
+        ),
+        'affectBounds' => array
+        (
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['affectBounds'],
+            'exclude'   => true,
+            'inputType' => 'checkbox',
+            'default'   => false,
+            'eval'      => array('tl_class' => 'w50'),
+            'sql'       => "char(1) NOT NULL default ''"
         ),
     ),
 );

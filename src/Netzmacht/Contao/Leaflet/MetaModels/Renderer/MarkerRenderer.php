@@ -83,7 +83,13 @@ class MarkerRenderer extends AbstractRenderer
             $marker = $this->buildMarker($item, $parentId);
 
             if ($marker) {
-                $featureCollection->addFeature($marker->toGeoJsonFeature(), true);
+                $feature = $marker->toGeoJsonFeature();
+
+                if ($this->model->affectBounds) {
+                    $feature->setProperty('affectBounds', true);
+                }
+
+                $featureCollection->addFeature($feature, true);
             }
         }
     }
