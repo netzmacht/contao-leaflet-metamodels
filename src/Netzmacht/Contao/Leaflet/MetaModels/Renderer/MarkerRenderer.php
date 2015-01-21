@@ -85,7 +85,7 @@ class MarkerRenderer extends AbstractRenderer
             if ($marker) {
                 $feature = $marker->toGeoJsonFeature();
 
-                if ($this->model->ingoreForBounds || !$this->layerModel->affectBounds) {
+                if ($this->model->ignoreForBounds || !$this->layerModel->affectBounds) {
                     $feature->setProperty('ignoreForBounds', true);
                 }
 

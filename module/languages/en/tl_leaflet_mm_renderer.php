@@ -64,5 +64,5 @@ $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['styleAttribute'][0]       = 'Styl
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['styleAttribute'][1]       = 'Select an attribute which contains the style id. If defined it\'s preferred over the selected style in the feature settings.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['deferred'][0]             = 'Deferred loading';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['deferred'][1]             = 'Load data of the layer deferred using ajax.';
-$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['affectBounds'][0]         = 'Affect map bounds';
-$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['affectBounds'][1]         = 'If the map support it the rendered data will affect the initial map bounds.';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ignoreForBounds'][0]      = 'Exclude from bounds';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ignoreForBounds'][1]      = 'Exclude item renderers result from initial bounds calculation.';

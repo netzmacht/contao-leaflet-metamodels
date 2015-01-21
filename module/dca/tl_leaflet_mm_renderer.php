@@ -105,7 +105,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'config'              => array('coordinates'),
             'popup before active' => array('addPopup', 'renderSettings'),
             'icon before active'  => array('icon', 'iconAttribute'),
-            '+active'             => array('deferred', 'ingoreForBounds')
+            '+active'             => array('deferred', 'ignoreForBounds')
         ),
         'geojson extends default'                => array(
             '+title'  => array('geojsonAttribute'),
@@ -113,10 +113,10 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
         ),
         'reference extends default'              => array(
             'config'  => array('referenceType', 'referenceAttribute', 'standalone'),
-            '+active' => array('deferred', 'ingoreForBounds')
+            '+active' => array('deferred', 'ignoreForBounds')
         ),
         'referencereflayer extends reference' => array(
-            '-active' => array('deferred', 'ingoreForBounds')
+            '-active' => array('deferred', 'ignoreForBounds')
         ),
         'referencerefmarkerstandalone extends reference' => array(
             'popup before active' => array('addPopup', 'renderSettings'),
@@ -443,9 +443,9 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             ),
             'sql'              => "int(10) unsigned NOT NULL default '0'"
         ),
-        'ingoreForBounds' => array
+        'ignoreForBounds' => array
         (
-            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ingoreForBounds'],
+            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ignoreForBounds'],
             'exclude'   => true,
             'inputType' => 'checkbox',
             'default'   => false,
