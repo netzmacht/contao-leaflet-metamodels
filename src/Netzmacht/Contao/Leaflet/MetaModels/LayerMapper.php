@@ -102,6 +102,10 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
             $collection = $layer->getInitializationData();
             $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $bounds);
 
+            if ($model->affectBounds) {
+                $layer->setOption('affectBounds', true);
+            }
+
             foreach ($items as $item) {
                 foreach ($renderers as $renderer) {
                     $renderer->loadData($item, $collection, $mapper, $definition->getId(), $bounds);

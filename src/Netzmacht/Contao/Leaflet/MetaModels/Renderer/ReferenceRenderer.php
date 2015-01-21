@@ -111,7 +111,13 @@ class ReferenceRenderer extends AbstractRenderer
         }
 
         if ($definition instanceof ConvertsToGeoJsonFeature && $definition->convertsFullyToGeoJson()) {
-            $dataLayer->addData($definition->toGeoJsonFeature(), true);
+            $feature = $definition->toGeoJsonFeature();
+
+            if ($feature instanceof Feature && ($this->model->ingoreForBounds  || !$this->layerModel->affectBounds)) {
+                $feature->setProperty('ignoreForBounds', true);
+            }
+
+            $dataLayer->addData($feature, true);
         } else {
             $dataLayer->addLayer($definition);
         }
@@ -134,8 +140,8 @@ class ReferenceRenderer extends AbstractRenderer
             if ($definition instanceof ConvertsToGeoJsonFeature) {
                 $feature = $definition->toGeoJsonFeature();
 
-                if ($feature instanceof Feature && $this->model->affectBounds) {
-                    $feature->setProperty('affectBounds', true);
+                if ($feature instanceof Feature && ($this->model->ingoreForBounds  || !$this->layerModel->affectBounds)) {
+                    $feature->setProperty('ignoreForBounds', true);
                 }
                 $featureCollection->addFeature($feature);
             }

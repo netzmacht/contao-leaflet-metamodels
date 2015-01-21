@@ -34,6 +34,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['metapalettes']['metamodels extends defau
         'metamodel_filterparams'
     ),
     '+expert' => array('onEachFeature', 'pointToLayer'),
+    '+active' => array('affectBounds')
 );
 
 $GLOBALS['TL_DCA']['tl_leaflet_layer']['metasubpalettes']['metamodel_use_limit'] = array(
