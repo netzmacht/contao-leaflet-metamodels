@@ -80,15 +80,10 @@ class MarkerRenderer extends AbstractRenderer
         $deferred = false
     ) {
         if ($this->model->deferred == $deferred) {
-            $marker = $this->buildMarker($item, $parentId);
+            $marker  = $this->buildMarker($item, $parentId);
+            $feature = $mapper->convertToGeoJsonFeature($marker, $this->model);
 
-            if ($marker) {
-                $feature = $marker->toGeoJsonFeature();
-
-                if ($this->model->ignoreForBounds || !$this->layerModel->affectBounds) {
-                    $feature->setProperty('ignoreForBounds', true);
-                }
-
+            if ($feature) {
                 $featureCollection->addFeature($feature, true);
             }
         }

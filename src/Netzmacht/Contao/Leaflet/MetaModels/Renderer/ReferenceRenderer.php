@@ -111,13 +111,11 @@ class ReferenceRenderer extends AbstractRenderer
         }
 
         if ($definition instanceof ConvertsToGeoJsonFeature && $definition->convertsFullyToGeoJson()) {
-            $feature = $definition->toGeoJsonFeature();
+            $feature = $mapper->convertToGeoJsonFeature($definition, $this->model);
 
-            if ($feature instanceof Feature && ($this->model->ignoreForBounds  || !$this->layerModel->affectBounds)) {
-                $feature->setProperty('ignoreForBounds', true);
+            if ($feature) {
+                $dataLayer->addData($feature);
             }
-
-            $dataLayer->addData($feature, true);
         } else {
             $dataLayer->addLayer($definition);
         }
