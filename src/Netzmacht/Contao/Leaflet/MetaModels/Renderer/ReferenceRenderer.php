@@ -16,6 +16,7 @@ use MetaModels\IItem as Item;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
 use Netzmacht\Contao\Leaflet\Definition\Style;
+use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 use Netzmacht\LeafletPHP\Definition\GeoJson\ConvertsToGeoJsonFeature;
@@ -24,7 +25,6 @@ use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\HasPopup;
 use Netzmacht\LeafletPHP\Definition\Layer;
-use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
@@ -64,7 +64,7 @@ class ReferenceRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
         if ($deferred != $this->model->deferred && $this->model->referenceType !== 'reflayer') {
@@ -88,7 +88,7 @@ class ReferenceRenderer extends AbstractRenderer
         $this->prepareValues($metaModel, $items, $reference, $values, $icons, $styles);
         $this->preLoadIcons($icons, $mapper);
         $this->preLoadStyles($styles, $mapper);
-        $this->preLoadReferences($values, $mapper, $bounds);
+        $this->preLoadReferences($values, $mapper, $filter);
     }
 
     /**
@@ -98,7 +98,7 @@ class ReferenceRenderer extends AbstractRenderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        LatLngBounds $bounds = null
+        Filter $filter  = null
     ) {
         if ($this->model->referenceType !== 'reflayer' && $this->model->deferred) {
             return;
@@ -129,7 +129,7 @@ class ReferenceRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
         if ($deferred == $this->model->deferred && $this->model->referenceType !== 'reflayer') {
@@ -138,7 +138,7 @@ class ReferenceRenderer extends AbstractRenderer
             if ($definition instanceof ConvertsToGeoJsonFeature) {
                 $feature = $definition->toGeoJsonFeature();
 
-                if ($feature instanceof Feature && ($this->model->ignoreForBounds  || !$this->layerModel->affectBounds)) {
+                if ($feature instanceof Feature && ($this->model->ignoreForBounds  || $this->layerModel->boundsMode !== 'extend')) {
                     $feature->setProperty('ignoreForBounds', true);
                 }
                 $featureCollection->addFeature($feature);
@@ -173,7 +173,7 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * {@inheritdoc}
      */
-    private function preLoadReferences(array $values, DefinitionMapper $mapper, LatLngBounds $bounds = null)
+    private function preLoadReferences(array $values, DefinitionMapper $mapper, Filter $filter  = null)
     {
         $modelClass = $this->getReferenceModelClass();
         if (!$modelClass || empty($values)) {
@@ -193,7 +193,7 @@ class ReferenceRenderer extends AbstractRenderer
             }
 
             $elementId = $this->getReferenceId($model);
-            $reference = $mapper->handle($model, $bounds, $elementId);
+            $reference = $mapper->handle($model, $filter, $elementId);
 
             if (!$reference) {
                 continue;

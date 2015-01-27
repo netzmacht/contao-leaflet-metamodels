@@ -12,10 +12,10 @@
 namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
 use MetaModels\IItem as Item;
+use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\GeoJson\StaticFeature;
-use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
 /**
  * Class GeoJsonRenderer only support lazy loading of geojson data.
@@ -34,7 +34,7 @@ class GeoJsonRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
         if (!$this->model->deferred != $deferred) {

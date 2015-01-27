@@ -32,6 +32,10 @@ $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
     'children'   => false,
     'icon'       => 'system/modules/leaflet-metamodels/assets/img/layer.png',
     'metamodels' => true,
+    'boundsMode' => array(
+        'extend' => true,
+        'fit'    => true,
+    ),
     'label'    => function ($row, $label) {
         $metaModel = \MetaModels\Factory::byId($row['metamodel']);
 

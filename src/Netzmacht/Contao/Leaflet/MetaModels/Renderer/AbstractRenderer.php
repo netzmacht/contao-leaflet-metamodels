@@ -19,6 +19,7 @@ use MetaModels\Items;
 use MetaModels\Render\Setting\Factory as RenderSettingFactory;
 use MetaModels\Render\Setting\ICollection as RenderSetting;
 use MetaModels\Render\Template;
+use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
 use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
@@ -27,7 +28,6 @@ use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Type\Icon;
-use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 
 /**
  * Class AbstractFeature is the base implementation of the MetaModels item renderer interface.
@@ -83,7 +83,7 @@ abstract class AbstractRenderer implements Renderer
         MetaModel $metaModel,
         IItems $items,
         DefinitionMapper $mapper,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
     }
@@ -96,7 +96,7 @@ abstract class AbstractRenderer implements Renderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
     }
@@ -108,7 +108,7 @@ abstract class AbstractRenderer implements Renderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        LatLngBounds $bounds = null
+        Filter $filter  = null
     ) {
     }
 
