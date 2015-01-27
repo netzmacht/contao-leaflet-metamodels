@@ -189,6 +189,8 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      * @param Filter     $filter    Optional request filter.
      *
      * @return Items
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     private function getItems(
         MetaModel $metaModel,

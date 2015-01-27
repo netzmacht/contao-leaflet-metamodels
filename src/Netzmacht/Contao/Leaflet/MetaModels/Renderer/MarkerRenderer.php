@@ -37,7 +37,7 @@ class MarkerRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
         if ($deferred != $this->model->deferred) {
@@ -76,7 +76,7 @@ class MarkerRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
         if ($this->model->deferred == $deferred) {

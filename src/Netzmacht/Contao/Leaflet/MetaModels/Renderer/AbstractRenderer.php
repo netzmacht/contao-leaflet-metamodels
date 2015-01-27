@@ -83,7 +83,7 @@ abstract class AbstractRenderer implements Renderer
         MetaModel $metaModel,
         IItems $items,
         DefinitionMapper $mapper,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
     }
@@ -96,7 +96,7 @@ abstract class AbstractRenderer implements Renderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
     }
@@ -108,7 +108,7 @@ abstract class AbstractRenderer implements Renderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        Filter $filter  = null
+        Filter $filter = null
     ) {
     }
 

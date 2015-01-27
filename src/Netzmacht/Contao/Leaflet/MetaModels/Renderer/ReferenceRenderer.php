@@ -64,7 +64,7 @@ class ReferenceRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
         if ($deferred != $this->model->deferred && $this->model->referenceType !== 'reflayer') {
@@ -98,7 +98,7 @@ class ReferenceRenderer extends AbstractRenderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        Filter $filter  = null
+        Filter $filter = null
     ) {
         if ($this->model->referenceType !== 'reflayer' && $this->model->deferred) {
             return;
@@ -129,7 +129,7 @@ class ReferenceRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
         if ($deferred == $this->model->deferred && $this->model->referenceType !== 'reflayer') {
@@ -138,7 +138,8 @@ class ReferenceRenderer extends AbstractRenderer
             if ($definition instanceof ConvertsToGeoJsonFeature) {
                 $feature = $definition->toGeoJsonFeature();
 
-                if ($feature instanceof Feature && ($this->model->ignoreForBounds  || $this->layerModel->boundsMode !== 'extend')) {
+                if ($feature instanceof Feature
+                    && ($this->model->ignoreForBounds || $this->layerModel->boundsMode !== 'extend')) {
                     $feature->setProperty('ignoreForBounds', true);
                 }
                 $featureCollection->addFeature($feature);
@@ -173,7 +174,7 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * {@inheritdoc}
      */
-    private function preLoadReferences(array $values, DefinitionMapper $mapper, Filter $filter  = null)
+    private function preLoadReferences(array $values, DefinitionMapper $mapper, Filter $filter = null)
     {
         $modelClass = $this->getReferenceModelClass();
         if (!$modelClass || empty($values)) {

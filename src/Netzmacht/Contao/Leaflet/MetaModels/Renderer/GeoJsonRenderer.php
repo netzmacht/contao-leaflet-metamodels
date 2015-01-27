@@ -34,7 +34,7 @@ class GeoJsonRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter  = null,
+        Filter $filter = null,
         $deferred = false
     ) {
         if (!$this->model->deferred != $deferred) {
