@@ -18,8 +18,8 @@ use Netzmacht\Contao\Leaflet\Filter\BboxFilter;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
-use Netzmacht\LeafletPHP\Definition\Type\LatLng;
-use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
+use Netzmacht\LeafletPHP\Value\LatLng;
+use Netzmacht\LeafletPHP\Value\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 
 /**
@@ -142,7 +142,7 @@ class MarkerRenderer extends AbstractRenderer
      *
      * @param Item $item The MetaModel item.
      *
-     * @return LatLng|null
+     * @return \Netzmacht\LeafletPHP\Value\LatLng|null
      */
     protected function getCoordinates(Item $item)
     {
