@@ -27,6 +27,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['metapalettes']['metamodels extends defau
 (
     '+title'  => array('metamodel'),
     '+config' => array(
+        'boundsMode',
         'metamodel_use_limit', 
         'metamodel_sortby', 
         'metamodel_sortby_direction',
@@ -34,7 +35,6 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['metapalettes']['metamodels extends defau
         'metamodel_filterparams'
     ),
     '+expert' => array('onEachFeature', 'pointToLayer'),
-    '+active' => array('boundsMode')
 );
 
 $GLOBALS['TL_DCA']['tl_leaflet_layer']['metasubpalettes']['metamodel_use_limit'] = array(
