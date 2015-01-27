@@ -14,13 +14,13 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use MetaModels\IItem as Item;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
+use Netzmacht\Contao\Leaflet\Filter\BboxFilter;
+use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
-use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Type\LatLng;
 use Netzmacht\LeafletPHP\Definition\Type\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
-use Netzmacht\LeafletPHP\Plugins\Omnivore\OmnivoreLayer;
 
 /**
  * MarkerRenderer renders a map marker from a MetaModels item.
@@ -37,7 +37,7 @@ class MarkerRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
         if ($deferred != $this->model->deferred) {
@@ -76,13 +76,19 @@ class MarkerRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        LatLngBounds $bounds = null,
+        Filter $filter  = null,
         $deferred = false
     ) {
         if ($this->model->deferred == $deferred) {
-            $marker  = $this->buildMarker($item, $parentId);
-            $feature = $mapper->convertToGeoJsonFeature($marker, $this->model);
+            $marker = $this->buildMarker($item, $parentId);
 
+            if ($this->layerModel->boundsMode === 'fit' && $filter instanceof BboxFilter) {
+                if (!$filter->getBounds()->contains($marker->getLatLng())) {
+                    return;
+                }
+            }
+
+            $feature = $mapper->convertToGeoJsonFeature($marker, $this->model);
             if ($feature) {
                 $featureCollection->addFeature($feature, true);
             }
@@ -151,7 +157,7 @@ class MarkerRenderer extends AbstractRenderer
                 return null;
             }
 
-            return new LatLng($lng, $lng);
+            return new LatLng($lat, $lng);
         }
 
         $attribute = $this->getAttribute('coordinatesAttribute', $item);
