@@ -25,7 +25,7 @@ use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
 use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\Model\IconModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Type\Icon;
 

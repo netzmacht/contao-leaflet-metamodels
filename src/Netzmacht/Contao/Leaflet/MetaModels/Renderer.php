@@ -17,7 +17,7 @@ use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 
 /**

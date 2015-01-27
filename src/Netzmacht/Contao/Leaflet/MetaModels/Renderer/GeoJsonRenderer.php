@@ -14,8 +14,8 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use MetaModels\IItem as Item;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
-use Netzmacht\LeafletPHP\Definition\GeoJson\StaticFeature;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\StaticFeature;
 
 /**
  * Class GeoJsonRenderer only support lazy loading of geojson data.

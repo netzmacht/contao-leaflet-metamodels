@@ -29,7 +29,7 @@ use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
 use Netzmacht\DomManipulator\Rule\AttributeRule;
 use Netzmacht\JavascriptBuilder\Type\Expression;
 use Netzmacht\LeafletPHP\Definition;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Plugins\Omnivore\OmnivoreLayer;
 

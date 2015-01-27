@@ -17,7 +17,7 @@ use MetaModels\IMetaModel as MetaModel;
 use Netzmacht\Contao\Leaflet\Filter\BboxFilter;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
-use Netzmacht\LeafletPHP\Definition\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\LatLng;
 use Netzmacht\LeafletPHP\Value\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
