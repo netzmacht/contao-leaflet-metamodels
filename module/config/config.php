@@ -59,3 +59,22 @@ $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
 $GLOBALS['LEAFLET_MM_RENDERER']['marker']    = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\MarkerRenderer';
 $GLOBALS['LEAFLET_MM_RENDERER']['geojson']   = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\GeoJsonRenderer';
 $GLOBALS['LEAFLET_MM_RENDERER']['reference'] = 'Netzmacht\Contao\Leaflet\MetaModels\Renderer\ReferenceRenderer';
+
+/*
+ * MetaModel attribute factory.
+ */
+$GLOBALS['TL_EVENTS'][\MetaModels\MetaModelsEvents::ATTRIBUTE_FACTORY_CREATE][] = function (
+    \MetaModels\Attribute\Events\CreateAttributeFactoryEvent $event
+) {
+    $factory = $event->getFactory();
+    $factory->addTypeFactory(new \Netzmacht\Contao\Leaflet\MetaModels\Attribute\AttributeTypeFactory());
+};
+
+/*
+ * MetaModel boot system.
+ */
+$GLOBALS['TL_EVENTS'][\MetaModels\MetaModelsEvents::SUBSYSTEM_BOOT_BACKEND][] = function (
+    MetaModels\Events\MetaModelsBootEvent $event
+) {
+    new \Netzmacht\Contao\Leaflet\MetaModels\Attribute\Subscriber($event->getServiceContainer());
+};

@@ -1,0 +1,30 @@
+<?php
+
+/** @var Netzmacht\Contao\Leaflet\MapService $mapService */
+$mapService = $GLOBALS['container']['leaflet.map.service'];
+/** @var MetaModels\IMetaModel $metaModel */
+$metaModel  = $this->attribute->getMetaModel();
+
+// Only display if id selected.
+if ($this->raw['id']) {
+    // Render the map or just the title depends on render settings and context.
+    if (!$this->settings->leaflet_feOnly || TL_MODE === 'FE') {
+        $template   = $this->settings->leafet_template ?: 'leaflet_map_html';
+        $identifier = sprintf('%s_%s_map_%s', $metaModel->get('tableName'), $metaModel->get('id'), $this->raw['id']);
+
+        // Handle ajax requests.
+        $mapService->handleAjaxRequest($identifier);
+
+        // Generate the map.
+        echo $mapService->generate(
+            $this->raw['id'],
+            null,
+            $identifier,
+            $template,
+            $this->settings->leaflet_style
+        );
+    } else {
+        echo $this->raw['title'];
+    }
+}
+
