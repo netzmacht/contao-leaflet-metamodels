@@ -12,7 +12,7 @@
 namespace Netzmacht\Contao\Leaflet\MetaModels\Dca;
 
 use MetaModels\Factory;
-use Netzmacht\Contao\DevTools\Dca\Options\OptionsBuilder;
+use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
 

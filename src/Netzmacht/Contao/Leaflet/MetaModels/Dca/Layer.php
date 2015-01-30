@@ -11,8 +11,8 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Dca;
 
-use Netzmacht\Contao\DevTools\Dca\Options\OptionsBuilder;
-use Netzmacht\Contao\DevTools\ServiceContainerTrait;
+use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
+use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
  * Helper class for the metamodels integration into tl_leaflet_layer.

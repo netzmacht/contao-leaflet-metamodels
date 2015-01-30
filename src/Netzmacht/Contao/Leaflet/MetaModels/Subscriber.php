@@ -15,7 +15,7 @@ use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPr
 use MetaModels\Attribute\IAttribute;
 use MetaModels\DcGeneral\Data\Model;
 use MetaModels\IItem;
-use Netzmacht\Contao\DevTools\Dca\Options\OptionsBuilder;
+use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
 use Netzmacht\Contao\Leaflet\Event\GetHashEvent;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
