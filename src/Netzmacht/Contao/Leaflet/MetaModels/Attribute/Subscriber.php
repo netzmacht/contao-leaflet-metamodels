@@ -14,6 +14,11 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Attribute;
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
 use MetaModels\DcGeneral\Events\BaseSubscriber;
 
+/**
+ * Class Subscriber handles events for the leaflet map attribute.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Attribute
+ */
 class Subscriber extends BaseSubscriber
 {
     /**

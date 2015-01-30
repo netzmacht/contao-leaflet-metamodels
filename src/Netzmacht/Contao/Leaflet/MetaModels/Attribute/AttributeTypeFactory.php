@@ -11,9 +11,13 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Attribute;
 
-
 use MetaModels\Attribute\IAttributeTypeFactory;
 
+/**
+ * Class AttributeTypeFactory for the leaflet map attribute.
+ *
+ * @package Netzmacht\Contao\Leaflet\MetaModels\Attribute
+ */
 class AttributeTypeFactory implements IAttributeTypeFactory
 {
     /**
