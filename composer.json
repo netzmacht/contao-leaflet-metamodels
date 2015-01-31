@@ -20,7 +20,7 @@
     "require":{
         "php":">=5.4",
         "contao/core":">=3.2,<3.5-dev",
-        "netzmacht/contao-leaflet-maps": "~1.0",
+        "netzmacht/contao-leaflet-maps": "dev-develop",
         "netzmacht/contao-toolkit":"~1.0",
         "bit3/contao-meta-palettes": "~1.5",
         "menatwork/contao-multicolumnwizard": "~3.2",
