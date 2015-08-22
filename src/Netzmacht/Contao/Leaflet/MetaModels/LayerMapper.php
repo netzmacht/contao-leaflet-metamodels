@@ -12,12 +12,10 @@
 namespace Netzmacht\Contao\Leaflet\MetaModels;
 
 use MetaModels\Factory;
-use MetaModels\Filter\Rules\SimpleQuery;
 use MetaModels\Filter\Setting\Factory as FilterSettingFactory;
 use MetaModels\Filter\Setting\ICollection;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
-use Netzmacht\Contao\Leaflet\Filter\BboxFilter;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Mapper\GeoJsonMapper;
@@ -26,7 +24,6 @@ use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
-use Netzmacht\DomManipulator\Rule\AttributeRule;
 use Netzmacht\JavascriptBuilder\Type\Expression;
 use Netzmacht\LeafletPHP\Definition;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
@@ -281,8 +278,6 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 
         if ($model->onEachFeature) {
             $options['onEachFeature'] = new Expression($model->onEachFeature);
-
-            return $options;
         }
 
         return $options;
