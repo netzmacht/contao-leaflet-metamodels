@@ -45,7 +45,7 @@ class Layer
     public function __construct()
     {
         $this->layers   = &$GLOBALS['LEAFLET_LAYERS'];
-        $this->database = static::getService('database.connection');
+        $this->database = static::getServiceContainer()->getDatabaseConnection();
 
         \Controller::loadLanguageFile('leaflet_layer');
     }
@@ -57,7 +57,7 @@ class Layer
      */
     public function getMetaModels()
     {
-        $result  = \Database::getInstance()->query('SELECT id, name FROM tl_metamodel ORDER BY name');
+        $result  = $this->database->query('SELECT id, name FROM tl_metamodel ORDER BY name');
         $options = OptionsBuilder::fromResult($result, 'id', 'name')->getOptions();
 
         return $options;
