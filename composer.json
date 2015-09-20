@@ -19,13 +19,13 @@
     },
     "require":{
         "php":">=5.4",
-        "contao/core":">=3.2,<3.5-dev",
+        "contao/core":">=3.2,<3.6-dev",
         "netzmacht/contao-leaflet-maps": "dev-develop",
         "netzmacht/contao-toolkit":"~1.0",
         "bit3/contao-meta-palettes": "~1.5",
         "menatwork/contao-multicolumnwizard": "~3.2",
-        "metamodels/core": "2.0.x-dev",
-        "metamodels/attribute_select": "2.0.x-dev"
+        "metamodels/core": "~2.0",
+        "metamodels/attribute_select": "~2.0"
     },
     "require-dev":{
         "netzmacht/contao-build-tools": "~1.1"
