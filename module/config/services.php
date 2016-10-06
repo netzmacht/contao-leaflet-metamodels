@@ -14,7 +14,7 @@ use Netzmacht\Contao\Toolkit\DependencyInjection\Services;
 
 global $container;
 
-$container['leaflet.mm.dca.layer'] = $container->share(
+$container['leaflet.mm.dca.layer-callbacks'] = $container->share(
     function ($container) {
         return new Layer(
             $container[Services::DCA_MANAGER],
@@ -28,7 +28,7 @@ $container['leaflet.mm.dca.renderer-callbacks'] = $container->share(
     function ($container) {
         return new \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer(
             $container[Services::DCA_MANAGER],
-            $container['metamodels-factory.factory']
+            $container['metamodels-service-container']->getFactory()
         );
     }
 );

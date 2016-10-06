@@ -37,7 +37,12 @@ $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
         'fit'    => true,
     ),
     'label'    => function ($row, $label) {
-        $metaModel = \MetaModels\Factory::byId($row['metamodel']);
+        /** @var \MetaModels\IMetaModelsServiceContainer $serviceContainer */
+        $serviceContainer = $GLOBALS['container']['metamodels-service-container'];
+
+        $factory   = $serviceContainer->getFactory();
+        $name      = $factory->translateIdToMetaModelName($row['metamodel']);
+        $metaModel = $factory->getMetaModel($name);
 
         if (!$metaModel) {
             return $label;
