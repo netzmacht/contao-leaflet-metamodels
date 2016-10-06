@@ -35,7 +35,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'flag'                    => 1,
             'panelLayout'             => 'limit',
             'headerFields'            => array('title', 'type', 'metamodel'),
-            'child_record_callback'   => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'generateRow'),
+            'child_record_callback'   => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('generateRow'),
         ),
         'label' => array
         (
@@ -78,7 +78,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
                 'label'           => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['toggle'],
                 'icon'            => 'visible.gif',
                 'attributes'      => 'onclick="Backend.getScrollOffset();return AjaxRequest.toggleVisibility(this,%s)"',
-                'button_callback' => \Netzmacht\Contao\Toolkit\Dca::createToggleIconCallback(
+                'button_callback' => \Netzmacht\Contao\Toolkit\Dca\Callback\CallbackFactory::stateButton(
                     'tl_leaflet_mm_renderer',
                     'active'
                 )
@@ -173,7 +173,10 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'exclude'       => true,
             'inputType'     => 'text',
             'save_callback' => array(
-                \Netzmacht\Contao\Toolkit\Dca::createGenerateAliasCallback('tl_leaflet_mm_renderer', 'title'),
+                \Netzmacht\Contao\Toolkit\Dca\Callback\CallbackFactory::aliasGenerator(
+                    'tl_leaflet_mm_renderer',
+                    'title'
+                ),
             ),
             'eval'          => array('mandatory' => false, 'maxlength' => 255, 'tl_class' => 'w50', 'unique' => true),
             'sql'           => "varchar(255) NOT NULL default ''"
@@ -215,7 +218,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['coordinatesAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['longitudeAttribute'],
             'eval'             => array(
                 'mandatory'          => false,
@@ -230,7 +233,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['latitudeAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['latitudeAttribute'],
             'eval'             => array(
                 'mandatory'          => true,
@@ -245,7 +248,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['longitudeAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'eval'             => array(
                 'mandatory'          => true,
                 'tl_class'           => 'w50',
@@ -259,7 +262,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['geojsonAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'eval'             => array(
                 'mandatory'          => true,
                 'tl_class'           => 'w50',
@@ -273,7 +276,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['renderSettings'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getRenderSettings'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getRenderSettings'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['renderSettings'],
             'eval'             => array(
                 'mandatory'          => false,
@@ -322,7 +325,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['popupAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['latitudeAttribute'],
             'eval'             => array(
                 'mandatory'          => true,
@@ -366,7 +369,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['iconAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'eval'             => array(
                 'mandatory'          => false,
                 'tl_class'           => 'w50',
@@ -396,7 +399,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['referenceAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'eval'             => array(
                 'mandatory'          => true,
                 'tl_class'           => 'w50',
@@ -433,7 +436,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = array
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['styleAttribute'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer', 'getAttributes'),
+            'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Renderer::callback('getAttributes'),
             'reference'        => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['longitudeAttribute'],
             'eval'             => array(
                 'mandatory'          => false,

@@ -11,18 +11,53 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Dca;
 
-use MetaModels\Factory;
+use MetaModels\Factory as MetaModelsFactory;
+use Netzmacht\Contao\Toolkit\Dca\Callback\Callbacks;
+use Netzmacht\Contao\Toolkit\Dca\Manager;
 use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
-use Netzmacht\Contao\Leaflet\Model\StyleModel;
 
 /**
  * Helper class for tl_leaflet_mm_feature.
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Dca
  */
-class Renderer
+class Renderer extends Callbacks
 {
+    /**
+     * Name of the data container.
+     *
+     * @var string
+     */
+    protected static $name = 'tl_leaflet_mm_renderer';
+
+    /**
+     * Helper service name.
+     *
+     * @var string
+     */
+    protected static $serviceName = 'leaflet.mm.dca.renderer-callbacks';
+
+    /**
+     * Meta models factory.
+     *
+     * @var MetaModelsFactory
+     */
+    private $metaModelsFactory;
+
+    /**
+     * Renderer constructor.
+     *
+     * @param Manager           $manager           Data container manager.
+     * @param MetaModelsFactory $metaModelsFactory MetaModels factory.
+     */
+    public function __construct(Manager $manager, MetaModelsFactory $metaModelsFactory)
+    {
+        parent::__construct($manager);
+
+        $this->metaModelsFactory = $metaModelsFactory;
+    }
+
     /**
      * Get all attribute ids of a metamodel.
      *
@@ -35,14 +70,14 @@ class Renderer
         $options = array();
 
         if ($dataContainer->activeRecord) {
-            $layer = LayerModel::findByPK($dataContainer->activeRecord->pid);
+            $layer = LayerModel::findByPk($dataContainer->activeRecord->pid);
 
             if (!$layer) {
                 return $options;
             }
 
-            $factory   = new Factory();
-            $metaModel = $factory->byId($layer->metamodel);
+            $name      = $this->metaModelsFactory->translateIdToMetaModelName($layer->metamodel);
+            $metaModel = $this->metaModelsFactory->getMetaModel($name);
 
             if ($metaModel) {
                 foreach ($metaModel->getAttributes() as $attribute) {
@@ -76,7 +111,7 @@ class Renderer
                 ->prepare('SELECT * FROM tl_metamodel_rendersettings WHERE pid=?')
                 ->execute($layer->metamodel);
 
-            return OptionsBuilder::fromResult($result, 'id', 'name')->getOptions();
+            return OptionsBuilder::fromResult($result, 'name')->getOptions();
         }
 
         return $settings;

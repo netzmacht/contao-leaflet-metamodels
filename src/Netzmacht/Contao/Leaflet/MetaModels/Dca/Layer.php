@@ -11,17 +11,30 @@
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Dca;
 
+use Netzmacht\Contao\Toolkit\Dca\Callback\Callbacks;
+use Netzmacht\Contao\Toolkit\Dca\Manager;
 use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
-use Netzmacht\Contao\Toolkit\ServiceContainerTrait;
 
 /**
  * Helper class for the metamodels integration into tl_leaflet_layer.
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Dca
  */
-class Layer
+class Layer extends Callbacks
 {
-    use ServiceContainerTrait;
+    /**
+     * Name of the data container.
+     *
+     * @var string
+     */
+    protected static $name = 'tl_leaflet_layer';
+
+    /**
+     * Helper service name.
+     *
+     * @var string
+     */
+    protected static $serviceName = 'leaflet.mm.dca.layer-callbacks';
 
     /**
      * Layers definition.
@@ -40,12 +53,16 @@ class Layer
     /**
      * Construct.
      *
-     * @SuppressWarnings(PHPMD.Superglobals)
+     * @param Manager   $manager  Data container manager.
+     * @param \Database $database Database connection.
+     * @param array     $layers   Leaflet layer configuration.
      */
-    public function __construct()
+    public function __construct(Manager $manager, \Database $database, array $layers)
     {
-        $this->layers   = &$GLOBALS['LEAFLET_LAYERS'];
-        $this->database = static::getServiceContainer()->getDatabaseConnection();
+        parent::__construct($manager);
+
+        $this->database = $database;
+        $this->layers   = $layers;
 
         \Controller::loadLanguageFile('leaflet_layer');
     }
@@ -58,7 +75,7 @@ class Layer
     public function getMetaModels()
     {
         $result  = $this->database->query('SELECT id, name FROM tl_metamodel ORDER BY name');
-        $options = OptionsBuilder::fromResult($result, 'id', 'name')->getOptions();
+        $options = OptionsBuilder::fromResult($result, 'name')->getOptions();
 
         return $options;
     }

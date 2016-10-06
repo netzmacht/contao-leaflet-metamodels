@@ -8,9 +8,8 @@
  *
  * @license http://www.gnu.org/licenses/lgpl-3.0.html LGPL
  *
- * last-updated: 2015-02-11T09:18:30+01:00
+ * last-updated: 2016-10-06T15:59:49+02:00
  */
-
 
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['active']['0']               = 'Rendereinstellung aktivieren';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['active']['1']               = 'Rendereinstellung aktivieren';
@@ -42,6 +41,7 @@ $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['iconAttribute']['0']        = 'Ic
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['iconAttribute']['1']        = 'Wählen Sie das Attribut aus das die Icon-ID enthält. Wenn Sie ein Icon festgelegt haben, wird damit die Standardeinstellung des Renderers überschrieben.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['icon_legend']               = 'Icon';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ignoreForBounds']['0']      = 'Von Grenzen-Berechnung der Karte ausschließen.';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['ignoreForBounds']['1']      = 'Beim rendern der Elemente vorher festgelegte Darstellungsgrenzen nicht berücksichtigen.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['latitudeAttribute']['0']    = 'Breite-Attribut';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['latitudeAttribute']['1']    = 'Wählen Sie das Attribut das die geografische Breite zur Verfügung stellt.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['longitudeAttribute']['0']   = 'Längen-Attribut';
@@ -58,8 +58,11 @@ $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['referenceAttribute']['1']   = 'W�
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['referenceType']['0']        = 'Referenztyp';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['referenceType']['1']        = 'Bitte wählen Sie aus auf welchen Kartenlayer das Rendering bezug nimmt.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['renderSettings']['0']       = 'Anzuwendende Rendereinstellungen';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['renderSettings']['1']       = 'Wählen Sie die Rendereinstellungen aus, die für die Ausgabe benutzt werden sollen. Falls Sie diesen Feld leer lassen, werden die Standardeinstellungen für das ausgewählte MetaModel angewandt. Falls keine Standardeinstellung existiert werden Rohwerte ausgegeben.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['show']['0']                 = 'Details anzeigen';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['show']['1']                 = 'Lassen sie den Renderer ID %s anzeigen.';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['standalone']['0']           = 'Eigentständige Layer';
+$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['standalone']['1']           = 'Übernimmt die Referenz als Kopie des referenzierten Layers. Andernfalls wird das selbe Javascript-Objekt benutzt.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['style']['0']                = 'Stil';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['style']['1']                = 'Wählen Sie einen  Stil aus der als Standardvorgabe benutzt werden soll.';
 $GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['styleAttribute']['0']       = 'Stilattribut';
