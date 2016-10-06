@@ -20,7 +20,6 @@ use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Mapper\GeoJsonMapper;
 use Netzmacht\Contao\Leaflet\Mapper\Layer\AbstractLayerMapper;
-use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;

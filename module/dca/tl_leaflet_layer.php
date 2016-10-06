@@ -18,7 +18,7 @@ array_insert(
             'label'               => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodels'],
             'href'                => 'table=tl_leaflet_mm_renderer',
             'icon'                => 'edit.gif',
-            'button_callback'     => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Layer', 'generateRendererButton'),
+            'button_callback'     => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Layer::callback('generateRendererButton'),
         )
     )
 );
@@ -47,7 +47,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel']                  =
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => array('Netzmacht\Contao\Leaflet\MetaModels\Dca\Layer', 'getMetaModels'),
+    'options_callback' => \Netzmacht\Contao\Leaflet\MetaModels\Dca\Layer::callback('getMetaModels'),
     'eval'             => array
     (
         'mandatory'          => true,
