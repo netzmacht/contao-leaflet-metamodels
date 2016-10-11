@@ -1,9 +1,9 @@
 <?php
 
-/** @var Netzmacht\Contao\Leaflet\MapService $mapService */
-$mapService = $GLOBALS['container']['leaflet.map.service'];
+/** @var Netzmacht\Contao\Leaflet\MapProvider $mapProvider */
 /** @var MetaModels\IMetaModel $metaModel */
-$metaModel  = $this->attribute->getMetaModel();
+$mapProvider = $GLOBALS['container']['leaflet.map.provider'];
+$metaModel   = $this->attribute->getMetaModel();
 
 // Only display if id selected.
 if ($this->raw['id']) {
@@ -13,10 +13,10 @@ if ($this->raw['id']) {
         $identifier = sprintf('%s_%s_map_%s', $metaModel->get('tableName'), $metaModel->get('id'), $this->raw['id']);
 
         // Handle ajax requests.
-        $mapService->handleAjaxRequest($identifier);
+        $mapProvider->handleAjaxRequest($identifier);
 
         // Generate the map.
-        echo $mapService->generate(
+        echo $mapProvider->generate(
             $this->raw['id'],
             null,
             $identifier,
