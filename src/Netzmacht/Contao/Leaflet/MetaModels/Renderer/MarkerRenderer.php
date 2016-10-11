@@ -19,7 +19,6 @@ use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\LatLng;
-use Netzmacht\LeafletPHP\Value\LatLngBounds;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 
 /**
@@ -90,7 +89,7 @@ class MarkerRenderer extends AbstractRenderer
 
             $feature = $mapper->convertToGeoJsonFeature($marker, $this->model);
             if ($feature) {
-                $featureCollection->addFeature($feature, true);
+                $featureCollection->addFeature($feature);
             }
         }
     }
