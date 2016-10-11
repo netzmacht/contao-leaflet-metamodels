@@ -38,5 +38,5 @@ Install
 This extension can be installed using composer:
 
 ```
-$ php composer.phar require netzmacht/contao-leaflet-metamodels:~1.0
+$ php composer.phar require netzmacht/contao-leaflet-metamodels:~2.0
 ```
