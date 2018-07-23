@@ -12,7 +12,7 @@
 namespace Netzmacht\Contao\Leaflet\MetaModels;
 
 use MetaModels\Factory;
-use MetaModels\Filter\Setting\Factory as FilterSettingFactory;
+use MetaModels\Filter\Setting\FilterSettingFactory;
 use MetaModels\Filter\Setting\ICollection;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
@@ -58,6 +58,31 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     private $renderers = array();
 
     /**
+     * MetaModel factory.
+     *
+     * @var Factory
+     */
+    private $metaModelFactory;
+
+    /**
+     * Filter setting factory.
+     *
+     * @var FilterSettingFactory
+     */
+    private $filterSettingFactory;
+
+    /**
+     * LayerMapper constructor.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        $this->metaModelFactory     = $GLOBALS['container']['metamodels-factory.factory'];
+        $this->filterSettingFactory = $GLOBALS['container']['metamodels-filter-setting-factory.factory'];
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function buildConstructArguments(
@@ -89,8 +114,9 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         parent::build($definition, $model, $mapper, $filter);
 
         if ($definition instanceof OmnivoreLayer) {
-            $metaModel = Factory::byId($model->metamodel);
-            $items     = $this->getItems($metaModel, $model, $filter);
+            $metaModelName = $this->metaModelFactory->translateIdToMetaModelName($model->metamodel);
+            $metaModel     = $this->metaModelFactory->getMetaModel($metaModelName);
+            $items         = $this->getItems($metaModel, $model, $filter);
 
             if (!$items->getCount()) {
                 return;
@@ -119,10 +145,11 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      */
     public function handleGeoJson(\Model $model, DefinitionMapper $mapper, Filter $filter = null)
     {
-        $collection = new FeatureCollection();
-        $metaModel  = Factory::byId($model->metamodel);
-        $items      = $this->getItems($metaModel, $model, $filter);
-        $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $filter, true);
+        $collection    = new FeatureCollection();
+        $metaModelName = $this->metaModelFactory->translateIdToMetaModelName($model->metamodel);
+        $metaModel     = $this->metaModelFactory->getMetaModel($metaModelName);
+        $items         = $this->getItems($metaModel, $model, $filter);
+        $renderers     = $this->getRenderers($model, $metaModel, $items, $mapper, $filter, true);
 
         foreach ($items as $item) {
             foreach ($renderers as $renderer) {
@@ -195,7 +222,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     ) {
         $metaModelFilter = $metaModel->getEmptyFilter();
 
-        $filterSetting = FilterSettingFactory::byId($model->metamodel_filtering);
+        $filterSetting = $this->filterSettingFactory->createCollection($model->metamodel_filtering);
         $filterSetting->addRules(
             $metaModelFilter,
             array_merge(
