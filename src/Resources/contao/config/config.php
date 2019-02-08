@@ -30,7 +30,7 @@ $GLOBALS['LEAFLET_MAPPERS'][] = 'Netzmacht\Contao\Leaflet\MetaModels\LayerMapper
 $GLOBALS['LEAFLET_LAYERS']['metamodels'] = array
 (
     'children'   => false,
-    'icon'       => 'system/modules/leaflet-metamodels/assets/img/layer.png',
+    'icon'       => 'bundles/netzmachtcontaoleafletmetamodels/img/layer.png',
     'metamodels' => true,
     'boundsMode' => array(
         'extend' => true,
