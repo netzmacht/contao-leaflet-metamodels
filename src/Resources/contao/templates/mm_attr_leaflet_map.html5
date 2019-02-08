@@ -1,8 +1,7 @@
 <?php
 
-/** @var Netzmacht\Contao\Leaflet\MapProvider $mapProvider */
 /** @var MetaModels\IMetaModel $metaModel */
-$mapProvider = $GLOBALS['container']['leaflet.map.provider'];
+$mapProvider = \Contao\System::getContainer()->get('netzmacht.contao_leaflet_metamodels.map_provider');
 $metaModel   = $this->attribute->getMetaModel();
 
 // Only display if id selected.

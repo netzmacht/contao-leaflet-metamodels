@@ -1,29 +1,33 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Attribute;
 
-use MetaModels\Attribute\Select\Select;
+use MetaModels\AttributeSelectBundle\Attribute\Select;
 
 /**
  * Class LeafletMapSelect extends the default select attribute to preset it to the leaflet table.
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Attribute
  */
-class LeafletMapSelect extends Select
+final class LeafletMapSelect extends Select
 {
     /**
      * {@inheritdoc}
      */
-    protected function getSelectSource()
+    protected function getSelectSource(): string
     {
         return 'tl_leaflet_map';
     }
@@ -31,7 +35,7 @@ class LeafletMapSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function getIdColumn()
+    protected function getIdColumn(): string
     {
         return 'id';
     }
@@ -39,7 +43,7 @@ class LeafletMapSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function getSortingColumn()
+    protected function getSortingColumn(): string
     {
         return $this->get('select_sorting') ?: $this->getValueColumn();
     }
@@ -47,7 +51,7 @@ class LeafletMapSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function getValueColumn()
+    protected function getValueColumn(): string
     {
         return 'title';
     }
@@ -55,7 +59,7 @@ class LeafletMapSelect extends Select
     /**
      * {@inheritdoc}
      */
-    protected function getAliasColumn()
+    protected function getAliasColumn(): string
     {
         return 'alias';
     }
@@ -63,7 +67,7 @@ class LeafletMapSelect extends Select
     /**
      * {@inheritdoc}
      */
-    public function getAttributeSettingNames()
+    public function getAttributeSettingNames(): array
     {
         return array_diff(
             parent::getAttributeSettingNames(),

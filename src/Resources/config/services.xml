@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <defaults public="false" autoconfigure="false" autowire="false" />
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory"
+                 class="Netzmacht\Contao\Leaflet\MetaModels\Renderer\CompositeRendererFactory">
+            <argument type="tagged" tag="netzmacht.contao_leaflet_metamodels.renderer_factory" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\DefaultRendererFactory">
+            <argument type="service" id="metamodels.render_setting_factory" />
+            <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
+            <tag name="netzmacht.contao_leaflet_metamodels.renderer_factory" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\Attribute\AttributeTypeFactory">
+            <tag name="metamodels.attribute_factory" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\MapLayer\MetaModelsLayerMapper">
+            <argument type="service" id="metamodels.factory" />
+            <argument type="service" id="metamodels.filter_setting_factory" />
+            <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
+            <argument type="service" id="router" />
+            <argument type="service" id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory" />
+            <argument type="service" id="netzmacht.contao_toolkit.contao.input_adapter" />
+            <tag name="netzmacht.contao_leaflet.mapper" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\MapLayer\MetaModelsLayerLabelRenderer">
+            <argument type="service" id="metamodels.factory" />
+            <argument type="service" id="netzmacht.contao_toolkit.contao.backend_adapter" />
+            <tag name="netzmacht.contao_leaflet.layer_label_renderer" />
+        </service>
+
+        <service id="netzmacht.contao_leaflet_metamodels.map_provider"
+                 public="true"
+                 alias="netzmacht.contao_leaflet.map.provider"/>
+    </services>
+</container>

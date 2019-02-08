@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2015-2019 netzmacht David Molineus
@@ -35,6 +37,7 @@ final class Plugin implements BundlePluginInterface
                 ->setLoadAfter(
                     [ContaoCoreBundle::class, MetaModelsCoreBundle::class, MetaModelsAttributeSelectBundle::class]
                 )
+                ->setReplace(['leaflet-metamodels'])
         ];
     }
 }

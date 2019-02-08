@@ -1,36 +1,56 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
 
-namespace Netzmacht\Contao\Leaflet\MetaModels;
+declare(strict_types=1);
 
+namespace Netzmacht\Contao\Leaflet\MetaModels\EventListener;
+
+use Contao\Model\Collection;
 use ContaoCommunityAlliance\DcGeneral\Contao\View\Contao2BackendView\Event\GetPropertyOptionsEvent;
 use MetaModels\Attribute\IAttribute;
 use MetaModels\DcGeneral\Data\Model;
 use MetaModels\IItem;
+use Netzmacht\Contao\Toolkit\Data\Model\RepositoryManager;
 use Netzmacht\Contao\Toolkit\Dca\Options\OptionsBuilder;
 use Netzmacht\Contao\Leaflet\Event\GetHashEvent;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Event subscriber for the metamodels layer integration.
- *
- * @package Netzmacht\Contao\Leaflet\MetaModels
+ * Event subscriber for the MetaModels layer integration.
  */
-class Subscriber implements EventSubscriberInterface
+final class Subscriber implements EventSubscriberInterface
 {
+    /**
+     * Repository manager.
+     *
+     * @var RepositoryManager
+     */
+    private $repositoryManager;
+
+    /**
+     * Subscriber constructor.
+     *
+     * @param RepositoryManager $repositoryManager Database connection.
+     */
+    public function __construct(RepositoryManager $repositoryManager)
+    {
+        $this->repositoryManager = $repositoryManager;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return array(
             GetHashEvent::NAME            => 'getItemHash',
@@ -45,7 +65,7 @@ class Subscriber implements EventSubscriberInterface
      *
      * @return void
      */
-    public function getItemHash(GetHashEvent $event)
+    public function getItemHash(GetHashEvent $event): void
     {
         $data = $event->getData();
 
@@ -69,7 +89,7 @@ class Subscriber implements EventSubscriberInterface
      *
      * @SuppressWarnings(PHPMD.Superglobals)
      */
-    public function getPropertyOptions(GetPropertyOptionsEvent $event)
+    public function getPropertyOptions(GetPropertyOptionsEvent $event): void
     {
         $model = $event->getModel();
 
@@ -84,14 +104,14 @@ class Subscriber implements EventSubscriberInterface
             $selectTable = $attribute->get('select_table');
             $alias       = $attribute->get('select_alias');
 
-            if ($selectTable == 'tl_leaflet_layer') {
-                $collection = $this->fetchOptionsCollection('Netzmacht\Contao\Leaflet\Model\LayerModel', $attribute);
-                $options    = OptionsBuilder::fromCollection($collection, $alias, array($this, 'parseLayerLabel'))
+            if ($selectTable === 'tl_leaflet_layer') {
+                $collection = $this->fetchOptionsCollection(LayerModel::class, $attribute);
+                $options    = OptionsBuilder::fromCollection($collection, [$this, 'parseLayerLabel'], $alias)
                     ->groupBy('pid', array($this, 'parseLayerGroup'))
                     ->getOptions();
 
                 $event->setOptions($options);
-            } elseif ($selectTable == 'tl_leaflet_vector' || $selectTable == 'tl_leaflet_marker') {
+            } elseif ($selectTable === 'tl_leaflet_vector' || $selectTable === 'tl_leaflet_marker') {
                 $class      = $GLOBALS['TL_MODELS'][$selectTable];
                 $collection = $this->fetchOptionsCollection($class, $attribute);
                 $options    = OptionsBuilder::fromCollection($collection, $alias, $attribute->get('select_column'))
@@ -110,12 +130,13 @@ class Subscriber implements EventSubscriberInterface
      *
      * @return string
      */
-    public function parseLayerGroup($value)
+    public function parseLayerGroup($value): string
     {
-        $label = '';
+        $repository = $this->repositoryManager->getRepository(LayerModel::class);
+        $label      = '';
 
         do {
-            $layer = LayerModel::findByPK($value);
+            $layer = $repository->find((int) $value);
 
             if ($layer) {
                 if ($label) {
@@ -124,9 +145,8 @@ class Subscriber implements EventSubscriberInterface
 
                 $label = $layer->title . ' [' . $layer->id . ']' . $label;
                 $value = $layer->pid;
-
             } else {
-                $value = false;
+                $value = 0;
             }
         } while ($value > 0);
 
@@ -136,11 +156,11 @@ class Subscriber implements EventSubscriberInterface
     /**
      * Parse the layer label.
      *
-     * @param string $row The layer label.
+     * @param array $row The layer label.
      *
      * @return string
      */
-    public function parseLayerLabel($row)
+    public function parseLayerLabel(array $row): string
     {
         return $row['title'] . ' [' . $row['type'] . ']';
     }
@@ -151,24 +171,20 @@ class Subscriber implements EventSubscriberInterface
      * @param string     $modelClass The model class.
      * @param IAttribute $attribute  The MetaModel attribute which contains the select definitions.
      *
-     * @return \Model\Collection|null
+     * @return Collection|null
      */
-    protected function fetchOptionsCollection($modelClass, IAttribute $attribute)
+    private function fetchOptionsCollection(string $modelClass, IAttribute $attribute): ?Collection
     {
+        $repository = $this->repositoryManager->getRepository($modelClass);
+
         if ($attribute->get('select_where')) {
-            $collection = $modelClass::findBy(
-                array($attribute->get('select_where')),
-                array(),
-                array('order' => $attribute->get('select_sorting'))
+            return $repository->findBy(
+                [$attribute->get('select_where')],
+                [],
+                ['order' => $attribute->get('select_sorting')]
             );
-
-            return $collection;
-        } else {
-            $collection = $modelClass::findAll(
-                array('order' => $attribute->get('select_sorting'))
-            );
-
-            return $collection;
         }
+
+        return $repository->findAll(['order' => $attribute->get('select_sorting')]);
     }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services
+        http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults public="false" autoconfigure="false" autowire="false" />
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\LayerDcaListener" public="true">
+            <argument type="service" id="netzmacht.contao_toolkit.dca.manager" />
+            <argument type="service" id="database_connection" />
+            <argument type="service" id="netzmacht.contao_toolkit.contao.backend_adapter" />
+            <argument type="collection">%netzmacht.contao_leaflet.layers%</argument>
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\RendererDcaListener" public="true">
+            <argument type="service" id="netzmacht.contao_toolkit.dca.manager" />
+            <argument type="service" id="metamodels.factory" />
+            <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Subscriber">
+            <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\AttributeSubscriber">
+            <argument type="service" id="database_connection" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+    </services>
+</container>

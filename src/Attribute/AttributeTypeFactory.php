@@ -1,29 +1,59 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Attribute;
 
+use Doctrine\DBAL\Connection;
 use MetaModels\Attribute\IAttributeTypeFactory;
+use MetaModels\Helper\TableManipulator;
 
 /**
  * Class AttributeTypeFactory for the leaflet map attribute.
- *
- * @package Netzmacht\Contao\Leaflet\MetaModels\Attribute
  */
-class AttributeTypeFactory implements IAttributeTypeFactory
+final class AttributeTypeFactory implements IAttributeTypeFactory
 {
+    /**
+     * Database connection.
+     *
+     * @var Connection
+     */
+    private $connection;
+
+    /**
+     * Table manipulator.
+     *
+     * @var TableManipulator
+     */
+    private $tableManipulator;
+
+    /**
+     * AttributeTypeFactory constructor.
+     *
+     * @param Connection       $connection Database connection.
+     * @param TableManipulator $tableManipulator Table manipulator.
+     */
+    public function __construct(Connection $connection, TableManipulator $tableManipulator)
+    {
+        $this->connection       = $connection;
+        $this->tableManipulator = $tableManipulator;
+    }
+
     /**
      * {@inheritdoc}
      */
-    public function getTypeName()
+    public function getTypeName(): string
     {
         return 'leaflet_map';
     }
@@ -31,7 +61,7 @@ class AttributeTypeFactory implements IAttributeTypeFactory
     /**
      * {@inheritdoc}
      */
-    public function getTypeIcon()
+    public function getTypeIcon(): string
     {
         return 'system/modules/leaflet/assets/img/map.png';
     }
@@ -41,7 +71,7 @@ class AttributeTypeFactory implements IAttributeTypeFactory
      */
     public function createInstance($information, $metaModel)
     {
-        return new LeafletMapSelect($metaModel, $information);
+        return new LeafletMapSelect($metaModel, $information, $this->connection, $this->tableManipulator);
     }
 
     /**
@@ -49,7 +79,7 @@ class AttributeTypeFactory implements IAttributeTypeFactory
      *
      * @return bool
      */
-    public function isTranslatedType()
+    public function isTranslatedType(): bool
     {
         return false;
     }
@@ -59,7 +89,7 @@ class AttributeTypeFactory implements IAttributeTypeFactory
      *
      * @return bool
      */
-    public function isSimpleType()
+    public function isSimpleType(): bool
     {
         return true;
     }
@@ -69,7 +99,7 @@ class AttributeTypeFactory implements IAttributeTypeFactory
      *
      * @return bool
      */
-    public function isComplexType()
+    public function isComplexType(): bool
     {
         return true;
     }

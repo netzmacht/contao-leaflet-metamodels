@@ -1,13 +1,16 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
@@ -16,26 +19,38 @@ use MetaModels\IItems;
 use MetaModels\IMetaModel as MetaModel;
 use MetaModels\IItem as Item;
 use MetaModels\Items;
-use MetaModels\Render\Setting\Factory as RenderSettingFactory;
 use MetaModels\Render\Setting\ICollection as RenderSetting;
+use MetaModels\Render\Setting\RenderSettingFactory;
 use MetaModels\Render\Template;
-use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
-use Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 use Netzmacht\Contao\Leaflet\Model\IconModel;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
+use Netzmacht\Contao\Toolkit\Data\Model\RepositoryManager;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 use Netzmacht\LeafletPHP\Definition\Type\Icon;
 
 /**
  * Class AbstractFeature is the base implementation of the MetaModels item renderer interface.
- *
- * @package Netzmacht\Contao\Leaflet\MetaModels\Feature
  */
 abstract class AbstractRenderer implements Renderer
 {
+    /**
+     * Render setting factory.
+     *
+     * @var RenderSettingFactory
+     */
+    private $renderSettingFactory;
+
+    /**
+     * Repository manager.
+     *
+     * @var RepositoryManager
+     */
+    protected $repositoryManager;
+
     /**
      * The renderer model.
      *
@@ -55,7 +70,7 @@ abstract class AbstractRenderer implements Renderer
      *
      * @var Icon[]
      */
-    protected $icons = array();
+    protected $icons = [];
 
     /**
      * Fallback icon.
@@ -67,13 +82,21 @@ abstract class AbstractRenderer implements Renderer
     /**
      * Construct.
      *
-     * @param RendererModel $model      The feature model.
-     * @param LayerModel    $layerModel The layer model.
+     * @param RenderSettingFactory $renderSettingFactory Render setting factory.
+     * @param RepositoryManager    $repositoryManager    Repository manager.
+     * @param RendererModel        $model                The feature model.
+     * @param LayerModel           $layerModel           The layer model.
      */
-    public function __construct(RendererModel $model, LayerModel $layerModel)
-    {
-        $this->model      = $model;
-        $this->layerModel = $layerModel;
+    public function __construct(
+        RenderSettingFactory $renderSettingFactory,
+        RepositoryManager $repositoryManager,
+        RendererModel $model,
+        LayerModel $layerModel
+    ) {
+        $this->renderSettingFactory = $renderSettingFactory;
+        $this->repositoryManager    = $repositoryManager;
+        $this->model                = $model;
+        $this->layerModel           = $layerModel;
     }
 
     /**
@@ -83,9 +106,9 @@ abstract class AbstractRenderer implements Renderer
         MetaModel $metaModel,
         IItems $items,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $filter = null,
         $deferred = false
-    ) {
+    ): void {
     }
 
     /**
@@ -96,9 +119,9 @@ abstract class AbstractRenderer implements Renderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter = null,
+        Request $filter = null,
         $deferred = false
-    ) {
+    ): void {
     }
 
     /**
@@ -108,8 +131,8 @@ abstract class AbstractRenderer implements Renderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        Filter $filter = null
-    ) {
+        Request $filter = null
+    ): void {
     }
 
     /**
@@ -120,7 +143,7 @@ abstract class AbstractRenderer implements Renderer
      *
      * @return null|string
      */
-    protected function getPopupContent(Item $item, RenderSetting $settings = null)
+    protected function getPopupContent(Item $item, RenderSetting $settings = null): ?string
     {
         if (!$this->model->addPopup) {
             return null;
@@ -128,32 +151,34 @@ abstract class AbstractRenderer implements Renderer
 
         if ($this->model->addPopup === 'attribute') {
             $popupAttribute = $this->getAttribute('popupAttribute', $item);
-            $format         = $this->getOutputFormat($settings, 'text');
-            $parsed         = $item->parseAttribute($popupAttribute->getColName(), $format, $settings);
-
-            if (isset($parsed[$format])) {
-                return $parsed[$format];
+            if ($popupAttribute === null) {
+                return null;
             }
 
-            return $parsed['text'];
+            $format = $this->getOutputFormat($settings);
+            $parsed = $item->parseAttribute($popupAttribute->getColName(), $format, $settings);
+
+            return ($parsed[$format] ?? $parsed['text']);
         }
 
         $value = $item->parseValue($this->getOutputFormat($settings), $settings);
+        $data  = [];
 
         if ($settings) {
-            $template       = new Template($settings->get('template'));
-            $template->view = $settings;
+            $template         = new Template($settings->get('template'));
+            $template['view'] = $settings;
         } else {
             $template = new Template('metamodel_full');
         }
 
-        // Metamodels always expects an list of items. Instead of requiring customized templates,
+        // MetaModels always expects an list of items. Instead of requiring customized templates,
         // we pretend of having multiple items.
+        $data['details'] = $this->getDetailsCaption($item->getMetaModel());
+        $data['items']   = new Items([$item]);
+        $data['data']    = [$value];
+        $data['caller']  = $this;
 
-        $template->details = $this->getDetailsCaption($item->getMetaModel());
-        $template->items   = new Items(array($item));
-        $template->data    = array($value);
-        $template->caller  = $this;
+        $template->setData($data);
 
         return $template->parse($this->getOutputFormat($settings, 'html5'));
     }
@@ -164,14 +189,14 @@ abstract class AbstractRenderer implements Renderer
      * @param RenderSetting $settings The render settings.
      * @param string        $default  The default output format.
      *
-     * @return mixed|null|string
+     * @return string
      */
-    protected function getOutputFormat(RenderSetting $settings = null, $default = 'text')
+    protected function getOutputFormat(RenderSetting $settings = null, string $default = 'text'): string
     {
         if ($settings) {
-            $format = $settings->get('format');
+            $format = (string) $settings->get('format');
 
-            if (strlen($format)) {
+            if ($format !== '') {
                 return $format;
             }
         }
@@ -186,12 +211,10 @@ abstract class AbstractRenderer implements Renderer
      *
      * @return RenderSetting|null
      */
-    protected function getRenderSettings(MetaModel $metaModel)
+    protected function getRenderSettings(MetaModel $metaModel): ?RenderSetting
     {
         if ($this->model->renderSettings) {
-            $settings = RenderSettingFactory::byId($metaModel, $this->model->renderSettings);
-
-            return $settings;
+            return $this->renderSettingFactory->createCollection($metaModel, $this->model->renderSettings);
         }
 
         return null;
@@ -203,9 +226,9 @@ abstract class AbstractRenderer implements Renderer
      * @param string $column The name of the attribute id.
      * @param Item   $item   The metamodel item.
      *
-     * @return Attribute
+     * @return Attribute|null
      */
-    protected function getAttribute($column, Item $item)
+    protected function getAttribute($column, Item $item): ?Attribute
     {
         return $item->getMetaModel()->getAttributeById($this->model->$column);
     }
@@ -217,7 +240,7 @@ abstract class AbstractRenderer implements Renderer
      *
      * @return Icon|null
      */
-    protected function getIcon($itemId)
+    protected function getIcon($itemId): ?Icon
     {
         if (isset($this->icons[$itemId])) {
             return $this->icons[$itemId];
@@ -236,10 +259,8 @@ abstract class AbstractRenderer implements Renderer
      */
     protected function preLoadIcons(array $values, DefinitionMapper $mapper)
     {
-        $collection = IconModel::findMultipleByIds($values);
-        if (!$collection) {
-            return;
-        }
+        $repository = $this->repositoryManager->getRepository(IconModel::class);
+        $collection = $repository->findMultipleByIds($values) ?: [];
 
         foreach ($collection as $model) {
             if (!$model->active) {
@@ -267,10 +288,11 @@ abstract class AbstractRenderer implements Renderer
      *
      * @return void
      */
-    protected function loadFallbackIcon(DefinitionMapper $mapper)
+    protected function loadFallbackIcon(DefinitionMapper $mapper): void
     {
         if ($this->model->icon) {
-            $iconModel = IconModel::findByPk($this->model->icon);
+            $repository = $this->repositoryManager->getRepository(IconModel::class);
+            $iconModel  = $repository->find((int) $this->model->icon);
 
             if ($iconModel) {
                 $this->fallbackIcon = $mapper->handle($iconModel);
@@ -294,11 +316,12 @@ abstract class AbstractRenderer implements Renderer
      * @param MetaModel $metaModel The MetaModel.
      *
      * @return string
-     * @see    MetaModels\ItemList::getDetailsCaption
+     * @see    \MetaModels\CoreBundle\ItemList::getDetailsCaption
+     *
      * @SuppressWarnings(PHPMD.Superglobals)
      * @SuppressWarnings(PHPMD.CamelCaseVariableName)
      */
-    protected function getDetailsCaption(MetaModel $metaModel)
+    protected function getDetailsCaption(MetaModel $metaModel): ?string
     {
         $tableName = $metaModel->getTableName();
         if (isset($this->objView)
@@ -308,6 +331,7 @@ abstract class AbstractRenderer implements Renderer
         } elseif (isset($GLOBALS['TL_LANG']['MSC'][$tableName]['details'])) {
             return $GLOBALS['TL_LANG']['MSC'][$tableName]['details'];
         }
+
         return $GLOBALS['TL_LANG']['MSC']['details'];
     }
 }

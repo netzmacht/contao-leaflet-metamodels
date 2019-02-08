@@ -1,13 +1,16 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
@@ -15,8 +18,8 @@ use MetaModels\IItem as Item;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
 use Netzmacht\Contao\Leaflet\Filter\BboxFilter;
-use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\LatLng;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
@@ -36,9 +39,9 @@ class MarkerRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
+    ): void {
         if ($deferred != $this->model->deferred) {
             return;
         }
@@ -75,9 +78,9 @@ class MarkerRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
+    ): void {
         if ($this->model->deferred == $deferred) {
             $marker = $this->buildMarker($item, $parentId);
 
@@ -102,7 +105,7 @@ class MarkerRenderer extends AbstractRenderer
      *
      * @return Marker
      */
-    protected function buildMarker(Item $item, $parentId)
+    protected function buildMarker(Item $item, $parentId): Marker
     {
         $metaModel   = $item->getMetaModel();
         $coordinates = $this->getCoordinates($item);
@@ -137,13 +140,13 @@ class MarkerRenderer extends AbstractRenderer
     }
 
     /**
-     * Get coordinates for the given metamodel item.
+     * Get coordinates for the given MetaModel item.
      *
      * @param Item $item The MetaModel item.
      *
-     * @return \Netzmacht\LeafletPHP\Value\LatLng|null
+     * @return LatLng|null
      */
-    protected function getCoordinates(Item $item)
+    protected function getCoordinates(Item $item): ?LatLng
     {
         if ($this->model->coordinates == 'separate') {
             $latAttribute = $this->getAttribute('latitudeAttribute', $item);

@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
  * @copyright  2015-2019 netzmacht David Molineus

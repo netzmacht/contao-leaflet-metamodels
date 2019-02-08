@@ -1,22 +1,24 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
 
-namespace Netzmacht\Contao\Leaflet\MetaModels;
+declare(strict_types=1);
 
-use MetaModels\Filter\IFilter;
+namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
+
 use MetaModels\IItem as Item;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
-use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
 
@@ -33,7 +35,7 @@ interface Renderer
      * @param MetaModel        $metaModel The used MetaModel.
      * @param Items            $items     The MetaModel items list.
      * @param DefinitionMapper $mapper    The definition mapper.
-     * @param Filter           $filter    Optional request filter.
+     * @param Request          $request   Optional request filter.
      * @param bool             $deferred  Prepare the renderer for the fetching data only.
      *
      * @return void
@@ -42,9 +44,9 @@ interface Renderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    );
+    ): void;
 
     /**
      * Load data from the item and pass it to the feature collection.
@@ -53,7 +55,7 @@ interface Renderer
      * @param FeatureCollection $featureCollection The data layer.
      * @param DefinitionMapper  $mapper            The definition mapper.
      * @param string            $parentId          Id of the parent layer.
-     * @param Filter            $filter            Optional request filter.
+     * @param Request           $request           Optional request filter.
      * @param bool              $deferred          Data is loaded in deferred mode.
      *
      * @return void
@@ -63,9 +65,9 @@ interface Renderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    );
+    ): void;
 
     /**
      * Load layers from the item and assign them to the parent layer.
@@ -73,7 +75,7 @@ interface Renderer
      * @param Item             $item      Current meta model item.
      * @param GeoJson          $dataLayer The data layer.
      * @param DefinitionMapper $mapper    The definition mapper.
-     * @param Filter           $filter    Optional request filter.
+     * @param Request          $request   Optional request filter.
      *
      * @return void
      */
@@ -81,6 +83,6 @@ interface Renderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        Filter $filter = null
-    );
+        Request $request = null
+    ): void;
 }

@@ -1,47 +1,58 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
 
-namespace Netzmacht\Contao\Leaflet\MetaModels;
+declare(strict_types=1);
 
+namespace Netzmacht\Contao\Leaflet\MetaModels\MapLayer;
+
+use Contao\CoreBundle\Framework\Adapter;
+use Contao\Model;
+use Contao\StringUtil;
 use MetaModels\Factory;
 use MetaModels\Filter\Setting\FilterSettingFactory;
 use MetaModels\Filter\Setting\ICollection;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
-use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Mapper\GeoJsonMapper;
 use Netzmacht\Contao\Leaflet\Mapper\Layer\AbstractLayerMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\Contao\Leaflet\MetaModels\Model\RendererModel;
+use Netzmacht\Contao\Leaflet\MetaModels\Renderer\Renderer;
+use Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory;
 use Netzmacht\Contao\Leaflet\Model\LayerModel;
-use Netzmacht\Contao\Leaflet\Frontend\RequestUrl;
+use Netzmacht\Contao\Toolkit\Data\Model\RepositoryManager;
 use Netzmacht\JavascriptBuilder\Type\Expression;
 use Netzmacht\LeafletPHP\Definition;
-use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Definition\Group\GeoJson;
+use Netzmacht\LeafletPHP\Plugins\Omnivore\GeoJson as OmnivoreGeoJson;
 use Netzmacht\LeafletPHP\Plugins\Omnivore\OmnivoreLayer;
+use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
+use Netzmacht\LeafletPHP\Value\GeoJson\GeoJsonFeature;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * Class LayerMapper maps the metamodels layer definition.
  *
  * @package Netzmacht\Contao\Leaflet\MetaModels\Mapper
  */
-class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
+final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 {
     /**
      * Definition class.
      *
      * @var string
      */
-    protected static $definitionClass = 'Netzmacht\LeafletPHP\Plugins\Omnivore\GeoJson';
+    protected static $definitionClass = OmnivoreGeoJson::class;
 
     /**
      * The layer type.
@@ -55,7 +66,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      *
      * @var array
      */
-    private $renderers = array();
+    private $renderer = [];
 
     /**
      * MetaModel factory.
@@ -72,33 +83,77 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     private $filterSettingFactory;
 
     /**
-     * LayerMapper constructor.
+     * Router.
+     *
+     * @var RouterInterface
      */
-    public function __construct()
-    {
+    private $router;
+
+    /**
+     * Repository manager.
+     *
+     * @var RepositoryManager
+     */
+    private $repositoryManager;
+
+    /**
+     * Input adapter.
+     *
+     * @var Adapter
+     */
+    private $inputAdapter;
+
+    /**
+     * Renderer factory.
+     *
+     * @var RendererFactory
+     */
+    private $rendererFactory;
+
+    /**
+     * LayerMapper constructor.
+     *
+     * @param Factory              $metaModelFactory     MetaModel factory.
+     * @param FilterSettingFactory $filterSettingFactory Filter setting factory.
+     * @param RepositoryManager    $repositoryManager    Repository manager.
+     * @param RouterInterface      $router               Router.
+     * @param RendererFactory      $rendererFactory      Renderer factory.
+     * @param Adapter              $inputAdapter         Input adapter.
+     */
+    public function __construct(
+        Factory $metaModelFactory,
+        FilterSettingFactory $filterSettingFactory,
+        RepositoryManager $repositoryManager,
+        RouterInterface $router,
+        RendererFactory $rendererFactory,
+        Adapter $inputAdapter
+    ) {
         parent::__construct();
 
-        $this->metaModelFactory     = $GLOBALS['container']['metamodels-factory.factory'];
-        $this->filterSettingFactory = $GLOBALS['container']['metamodels-filter-setting-factory.factory'];
+        $this->metaModelFactory     = $metaModelFactory;
+        $this->filterSettingFactory = $filterSettingFactory;
+        $this->repositoryManager    = $repositoryManager;
+        $this->router               = $router;
+        $this->inputAdapter         = $inputAdapter;
+        $this->rendererFactory      = $rendererFactory;
     }
 
     /**
      * {@inheritdoc}
      */
     protected function buildConstructArguments(
-        \Model $model,
+        Model $model,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         $elementId = null
-    ) {
+    ): array {
         $layer = new GeoJson($this->getElementId($model, $elementId));
         $layer->setOptions($this->getLayerOptions($model));
 
-        $request   = RequestUrl::create($model->id);
+        $route     = $this->router->generate('leaflet_layer', ['layerId' => $model->id]);
         $elementId = $this->getElementId($model, $elementId);
-        $arguments = array($elementId, $request, array(), $layer);
 
-        return $arguments;
+        return [$elementId, $route, [], $layer];
     }
 
     /**
@@ -106,17 +161,22 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      */
     protected function build(
         Definition $definition,
-        \Model $model,
+        Model $model,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         Definition $parent = null
-    ) {
-        parent::build($definition, $model, $mapper, $filter);
+    ): void {
+        parent::build($definition, $model, $mapper, $request);
 
-        if ($definition instanceof OmnivoreLayer) {
+        if ($definition instanceof OmnivoreLayer && $model instanceof LayerModel) {
             $metaModelName = $this->metaModelFactory->translateIdToMetaModelName($model->metamodel);
             $metaModel     = $this->metaModelFactory->getMetaModel($metaModelName);
-            $items         = $this->getItems($metaModel, $model, $filter);
+
+            if ($metaModel === null) {
+                return;
+            }
+
+            $items = $this->getItems($metaModel, $model);
 
             if (!$items->getCount()) {
                 return;
@@ -125,7 +185,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
             /** @var GeoJson $layer */
             $layer      = $definition->getCustomLayer();
             $collection = $layer->getInitializationData();
-            $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $filter);
+            $renderers  = $this->getRenderers($model, $metaModel, $items, $mapper, $request);
 
             if ($model->boundsMode) {
                 $layer->setOption('boundsMode', $model->boundsMode);
@@ -133,8 +193,8 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
 
             foreach ($items as $item) {
                 foreach ($renderers as $renderer) {
-                    $renderer->loadData($item, $collection, $mapper, $definition->getId(), $filter);
-                    $renderer->loadLayers($item, $layer, $mapper, $filter);
+                    $renderer->loadData($item, $collection, $mapper, $definition->getId(), $request);
+                    $renderer->loadLayers($item, $layer, $mapper, $request);
                 }
             }
         }
@@ -143,17 +203,22 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
     /**
      * {@inheritdoc}
      */
-    public function handleGeoJson(\Model $model, DefinitionMapper $mapper, Filter $filter = null)
+    public function handleGeoJson(Model $model, DefinitionMapper $mapper, Request $request = null): ?GeoJsonFeature
     {
         $collection    = new FeatureCollection();
         $metaModelName = $this->metaModelFactory->translateIdToMetaModelName($model->metamodel);
         $metaModel     = $this->metaModelFactory->getMetaModel($metaModelName);
-        $items         = $this->getItems($metaModel, $model, $filter);
-        $renderers     = $this->getRenderers($model, $metaModel, $items, $mapper, $filter, true);
+
+        if ($metaModel === null || !$model instanceof LayerModel) {
+            return null;
+        }
+
+        $items     = $this->getItems($metaModel, $model);
+        $renderers = $this->getRenderers($model, $metaModel, $items, $mapper, $request, true);
 
         foreach ($items as $item) {
             foreach ($renderers as $renderer) {
-                $renderer->loadData($item, $collection, $mapper, $model->alias, $filter, true);
+                $renderer->loadData($item, $collection, $mapper, $model->alias, $request, true);
             }
         }
 
@@ -167,7 +232,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      * @param MetaModel        $metaModel The MetaModel.
      * @param Items            $items     The MetaModel items.
      * @param DefinitionMapper $mapper    The definition mapper.
-     * @param Filter           $filter    The requested bounds.
+     * @param Request          $request   The requested bounds.
      * @param bool             $deferred  Load for deferred mode.
      *
      * @return Renderer[]
@@ -177,31 +242,29 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
-        if (!array_key_exists($model->id, $this->renderers)) {
-            $renderers  = array();
-            $collection = RendererModel::findBy(
-                array('active=1', 'pid=?'),
-                array($model->id),
-                array('order' => 'sorting')
-            );
+    ): array {
+        if (!array_key_exists($model->id, $this->renderer)) {
+            $renderers  = [];
+            $collection = $this->repositoryManager
+                ->getRepository(RendererModel::class)
+                ->findBy(['.active=1', '.pid=?'], [$model->id], ['order' => '.sorting']);
 
             if ($collection) {
                 /** @var RendererModel $rendererModel */
                 foreach ($collection as $rendererModel) {
                     $renderer = $this->createRenderer($rendererModel, $model);
-                    $renderer->prepare($metaModel, $items, $mapper, $filter, $deferred);
+                    $renderer->prepare($metaModel, $items, $mapper, $request, $deferred);
 
                     $renderers[] = $renderer;
                 }
             }
 
-            $this->renderers[$model->id] = $renderers;
+            $this->renderer[$model->id] = $renderers;
         }
 
-        return $this->renderers[$model->id];
+        return $this->renderer[$model->id];
     }
 
     /**
@@ -209,24 +272,20 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      *
      * @param MetaModel  $metaModel The MetaModel.
      * @param LayerModel $model     The layer model.
-     * @param Filter     $filter    Optional request filter.
      *
      * @return Items
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    private function getItems(
-        MetaModel $metaModel,
-        LayerModel $model,
-        Filter $filter = null
-    ) {
+    private function getItems(MetaModel $metaModel, LayerModel $model): Items
+    {
         $metaModelFilter = $metaModel->getEmptyFilter();
 
         $filterSetting = $this->filterSettingFactory->createCollection($model->metamodel_filtering);
         $filterSetting->addRules(
             $metaModelFilter,
             array_merge(
-                deserialize($model->metamodel_filteraprams, true),
+                StringUtil::deserialize($model->metamodel_filteraprams, true),
                 $this->getFilterParameters($filterSetting)
             )
         );
@@ -235,7 +294,7 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
             $metaModelFilter,
             $model->metamodel_sortby,
             0,
-            $model->metamodel_use_limit ? ($model->metamodel_limit ?: 0) : 0,
+            $model->metamodel_use_limit ? ((int) $model->metamodel_limit) : 0,
             $model->metamodel_sortby_direction
             // $this->getAttributeNames() - Do we have to limit the attributes here?
         );
@@ -248,22 +307,14 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      * @param LayerModel    $layerModel    The layer model.
      *
      * @return Renderer
-     * @SuppressWarnings(PHPMD.Superglobals)
+     *
      * @throws \RuntimeException If the renderer does not exists.
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
      */
-    private function createRenderer(RendererModel $rendererModel, LayerModel $layerModel)
+    private function createRenderer(RendererModel $rendererModel, LayerModel $layerModel): Renderer
     {
-        if (!isset($GLOBALS['LEAFLET_MM_RENDERER'][$rendererModel->type])) {
-            throw new \RuntimeException(sprintf('Metamodel renderer "%s" does not exists', $rendererModel->type));
-        }
-
-        $class = $GLOBALS['LEAFLET_MM_RENDERER'][$rendererModel->type];
-
-        if (is_callable($class)) {
-            return call_user_func($class, $rendererModel, $layerModel);
-        }
-
-        return new $class($rendererModel, $layerModel);
+        return $this->rendererFactory->create($rendererModel, $layerModel);
     }
 
     /**
@@ -273,14 +324,14 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      *
      * @return string[]
      */
-    protected function getFilterParameters(ICollection $filterSettings)
+    protected function getFilterParameters(ICollection $filterSettings): array
     {
-        $params = array();
+        $params = [];
 
-        foreach (array_keys($filterSettings->getParameterFilterNames()) as $strName) {
-            $varValue = \Input::getInstance()->get($strName);
-            if (is_string($varValue)) {
-                $params[$strName] = $varValue;
+        foreach (array_keys($filterSettings->getParameterFilterNames()) as $name) {
+            $value = $this->inputAdapter->get($name);
+            if (is_string($value)) {
+                $params[$name] = $value;
             }
         }
 
@@ -294,9 +345,9 @@ class LayerMapper extends AbstractLayerMapper implements GeoJsonMapper
      *
      * @return array
      */
-    protected function getLayerOptions(LayerModel $model)
+    protected function getLayerOptions(LayerModel $model): array
     {
-        $options = array();
+        $options = [];
 
         if ($model->pointToLayer) {
             $options['pointToLayer'] = new Expression($model->pointToLayer);

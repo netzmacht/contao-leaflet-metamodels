@@ -1,16 +1,20 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
 
+use Contao\Model;
 
 /**
  * The feature model.
@@ -24,15 +28,18 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\Model;
  * @property mixed|null options
  * @property mixed|null coordinates
  * @property mixed|null coordinatesAttribute
- * @property mixed|null type
+ * @property string     type
  * @property mixed|null icon
  * @property mixed|null referenceAttribute
  * @property mixed|null referenceType
  * @property mixed|null standalone
  * @property mixed|null styleAttribute
  * @property mixed|null deferred
+ * @property string     style
+ * @property string     ignoreForBounds
+ * @property string     alias
  */
-class RendererModel extends \Model
+final class RendererModel extends Model
 {
     /**
      * The table name.

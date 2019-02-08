@@ -1,24 +1,29 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
+use Contao\Model;
 use MetaModels\Attribute\IAttribute as Attribute;
 use MetaModels\IItem as Item;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
 use Netzmacht\Contao\Leaflet\Definition\Style;
-use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\Contao\Leaflet\Model\StyleModel;
+use Netzmacht\Contao\Toolkit\Data\Model\Repository;
 use Netzmacht\LeafletPHP\Value\GeoJson\ConvertsToGeoJsonFeature;
 use Netzmacht\LeafletPHP\Value\GeoJson\Feature;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
@@ -28,6 +33,9 @@ use Netzmacht\LeafletPHP\Definition\Layer;
 use Netzmacht\LeafletPHP\Definition\UI\Marker;
 use Netzmacht\LeafletPHP\Definition\Vector;
 use Netzmacht\LeafletPHP\Definition\Vector\Path;
+use Netzmacht\Contao\Leaflet\Model\LayerModel;
+use Netzmacht\Contao\Leaflet\Model\VectorModel;
+use Netzmacht\Contao\Leaflet\Model\MarkerModel;
 
 /**
  * Class ReferenceRenderer renders a metamodel items attribute as reference to a marker, layer or vector.
@@ -41,14 +49,14 @@ class ReferenceRenderer extends AbstractRenderer
      *
      * @var Layer[]|Marker[]|Vector[]
      */
-    private $references = array();
+    private $references = [];
 
     /**
      * Preloaded styles.
      *
      * @var Style[]
      */
-    private $styles = array();
+    private $styles = [];
 
     /**
      * Fallback style.
@@ -64,17 +72,17 @@ class ReferenceRenderer extends AbstractRenderer
         MetaModel $metaModel,
         Items $items,
         DefinitionMapper $mapper,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
-        if ($deferred != $this->model->deferred && $this->model->referenceType !== 'reflayer') {
+    ): void {
+        if ($deferred !== $this->model->deferred && $this->model->referenceType !== 'reflayer') {
             return;
         }
 
         $reference = $metaModel->getAttributeById($this->model->referenceAttribute);
-        $values    = array();
-        $icons     = array();
-        $styles    = array();
+        $values    = [];
+        $icons     = [];
+        $styles    = [];
 
         // Reference attribute should not be empty. Could happen if an attribute is deleted, so stop initialization
         // here.
@@ -88,7 +96,7 @@ class ReferenceRenderer extends AbstractRenderer
         $this->prepareValues($metaModel, $items, $reference, $values, $icons, $styles);
         $this->preLoadIcons($icons, $mapper);
         $this->preLoadStyles($styles, $mapper);
-        $this->preLoadReferences($values, $mapper, $filter);
+        $this->preLoadReferences($values, $mapper, $request);
     }
 
     /**
@@ -98,8 +106,8 @@ class ReferenceRenderer extends AbstractRenderer
         Item $item,
         GeoJson $dataLayer,
         DefinitionMapper $mapper,
-        Filter $filter = null
-    ) {
+        Request $request = null
+    ): void {
         if ($this->model->referenceType !== 'reflayer' && $this->model->deferred) {
             return;
         }
@@ -129,9 +137,9 @@ class ReferenceRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
+    ): void {
         if ($deferred == $this->model->deferred && $this->model->referenceType !== 'reflayer') {
             $definition = $this->buildDefinition($item);
 
@@ -174,19 +182,16 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * {@inheritdoc}
      */
-    private function preLoadReferences(array $values, DefinitionMapper $mapper, Filter $filter = null)
+    private function preLoadReferences(array $values, DefinitionMapper $mapper, Request $request = null): void
     {
         $modelClass = $this->getReferenceModelClass();
-        if (!$modelClass || empty($values)) {
+        if ($modelClass === null) {
             return;
         }
 
-        /** @var \Model $modelClass */
-        $collection = $modelClass::findMultipleByIds($values);
-
-        if (!$collection) {
-            return;
-        }
+        /** @var Repository|Model $repository */
+        $repository = $this->repositoryManager->getRepository($modelClass);
+        $collection = $repository->findMultipleByIds($values) ?: [];
 
         foreach ($collection as $model) {
             if (!$model->active) {
@@ -194,7 +199,7 @@ class ReferenceRenderer extends AbstractRenderer
             }
 
             $elementId = $this->getReferenceId($model);
-            $reference = $mapper->handle($model, $filter, $elementId);
+            $reference = $mapper->handle($model, $request, $elementId);
 
             if (!$reference) {
                 continue;
@@ -211,17 +216,17 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * Get class of the reference model.
      *
-     * @return string
+     * @return string|null
      */
-    private function getReferenceModelClass()
+    private function getReferenceModelClass(): ?string
     {
         switch ($this->model->referenceType) {
             case 'reflayer':
-                return 'Netzmacht\Contao\Leaflet\Model\LayerModel';
+                return LayerModel::class;
             case 'refvector':
-                return 'Netzmacht\Contao\Leaflet\Model\VectorModel';
+                return VectorModel::class;
             case 'refmarker':
-                return 'Netzmacht\Contao\Leaflet\Model\MarkerModel';
+                return MarkerModel::class;
 
             default:
                 return null;
@@ -247,7 +252,7 @@ class ReferenceRenderer extends AbstractRenderer
         &$values,
         &$icons,
         &$styles
-    ) {
+    ): void {
         $icon  = $metaModel->getAttributeById($this->model->iconAttribute);
         $style = $metaModel->getAttributeById($this->model->styleAttribute);
 
@@ -379,10 +384,12 @@ class ReferenceRenderer extends AbstractRenderer
      *
      * @return void
      */
-    protected function loadFallbackStyle(DefinitionMapper $mapper)
+    protected function loadFallbackStyle(DefinitionMapper $mapper): void
     {
         if ($this->model->style) {
-            $styleModel = StyleModel::findActiveByPK($this->model->style);
+            /** @var Repository|StyleModel $repository */
+            $repository = $this->repositoryManager->getRepository(StyleModel::class);
+            $styleModel = $repository->findActiveByPK($this->model->style);
 
             if ($styleModel) {
                 $this->fallbackStyle = $mapper->handle($styleModel);
@@ -397,7 +404,7 @@ class ReferenceRenderer extends AbstractRenderer
      *
      * @return Style|null
      */
-    protected function getStyle($itemId)
+    protected function getStyle($itemId): ?Style
     {
         if (isset($this->styles[$itemId])) {
             return $this->styles[$itemId];
@@ -421,11 +428,11 @@ class ReferenceRenderer extends AbstractRenderer
     /**
      * Get the reference id for the model.
      *
-     * @param \Model $model The model.
+     * @param Model $model The model.
      *
      * @return null|string
      */
-    private function getReferenceId($model)
+    private function getReferenceId(Model $model): ?string
     {
         $elementId = null;
         if ($this->model->standalone) {

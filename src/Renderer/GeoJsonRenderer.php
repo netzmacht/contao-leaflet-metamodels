@@ -1,19 +1,23 @@
 <?php
 
 /**
+ * Contao Leaflet MetaModels integration.
+ *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2016 netzmacht David Molineus
- * @license    LGPL 3.0
+ * @copyright  2015-2019 netzmacht David Molineus
+ * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
- *
  */
+
+declare(strict_types=1);
 
 namespace Netzmacht\Contao\Leaflet\MetaModels\Renderer;
 
 use MetaModels\IItem as Item;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
+use Netzmacht\Contao\Leaflet\Mapper\Request;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\GeoJson\StaticFeature;
 
@@ -34,9 +38,9 @@ class GeoJsonRenderer extends AbstractRenderer
         FeatureCollection $featureCollection,
         DefinitionMapper $mapper,
         $parentId,
-        Filter $filter = null,
+        Request $request = null,
         $deferred = false
-    ) {
+    ): void {
         if (!$this->model->deferred != $deferred) {
             return;
         }
@@ -70,7 +74,7 @@ class GeoJsonRenderer extends AbstractRenderer
      *
      * @return void
      */
-    private function loadFeaturesFromFile(Item $item, $attribute, $callback)
+    private function loadFeaturesFromFile(Item $item, $attribute, $callback): void
     {
         $value = $item->parseAttribute($attribute);
 
