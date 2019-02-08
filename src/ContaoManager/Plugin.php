@@ -20,6 +20,7 @@ use Contao\ManagerPlugin\Bundle\Config\BundleConfig;
 use Contao\ManagerPlugin\Bundle\Parser\ParserInterface;
 use MetaModels\AttributeSelectBundle\MetaModelsAttributeSelectBundle;
 use MetaModels\CoreBundle\MetaModelsCoreBundle;
+use Netzmacht\Contao\Leaflet\Bundle\NetzmachtContaoLeafletBundle;
 use Netzmacht\Contao\Leaflet\MetaModels\NetzmachtContaoLeafletMetaModelsBundle;
 
 /**
@@ -35,7 +36,12 @@ final class Plugin implements BundlePluginInterface
         return [
             BundleConfig::create(NetzmachtContaoLeafletMetaModelsBundle::class)
                 ->setLoadAfter(
-                    [ContaoCoreBundle::class, MetaModelsCoreBundle::class, MetaModelsAttributeSelectBundle::class]
+                    [
+                        ContaoCoreBundle::class,
+                        MetaModelsCoreBundle::class,
+                        MetaModelsAttributeSelectBundle::class,
+                        NetzmachtContaoLeafletBundle::class,
+                    ]
                 )
                 ->setReplace(['leaflet-metamodels'])
         ];

@@ -12,6 +12,7 @@
 
 declare(strict_types=1);
 
+use MetaModels\CoreBundle\Contao\Hooks\ContentElementCallback;
 use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\LayerDcaListener;
 
 array_insert(
@@ -96,7 +97,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_sortby'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => ['MetaModels\Dca\Content', 'getAttributeNames'],
+    'options_callback' => [ContentElementCallback::class, 'getAttributeNames'],
     'eval'             => [
         'includeBlankOption' => true,
         'chosen'             => true,
@@ -123,8 +124,8 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_filtering'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filtering'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => ['MetaModels\Dca\Content', 'getFilterSettings'],
-    'default'          => '',
+    'options_callback' => [ContentElementCallback::class, 'getFilterSettings'],
+    'default'          => '0',
     'eval'             => [
         'includeBlankOption' => true,
         'submitOnChange'     => true,

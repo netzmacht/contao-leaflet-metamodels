@@ -175,19 +175,19 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = [
             ],
         ],
         'type'                 => [
-            'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['type'],
-            'exclude'   => true,
-            'inputType' => 'select',
-            'eval'      => [
+            'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['type'],
+            'exclude'          => true,
+            'inputType'        => 'select',
+            'eval'             => [
                 'mandatory'          => true,
                 'tl_class'           => 'w50',
                 'includeBlankOption' => true,
                 'submitOnChange'     => true,
                 'chosen'             => true,
             ],
-            'options'   => array_keys($GLOBALS['LEAFLET_MM_RENDERER']),
-            'reference' => &$GLOBALS['TL_LANG']['leaflet_mm_renderer'],
-            'sql'       => "varchar(32) NOT NULL default ''",
+            'options_callback' => [RendererDcaListener::class, 'getRendererTypes'],
+            'reference'        => &$GLOBALS['TL_LANG']['leaflet_mm_renderer'],
+            'sql'              => "varchar(32) NOT NULL default ''",
         ],
         'coordinates'          => [
             'label'     => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['coordinates'],
@@ -335,7 +335,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = [
             'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['icon'],
             'exclude'          => true,
             'inputType'        => 'select',
-            'options_callback' => ['Netzmacht\Contao\Leaflet\Dca\MarkerCallbacks', 'getIcons'],
+            'options_callback' => ['netzmacht.contao_leaflet.listeners.dca.marker', 'getIcons'],
             'eval'             => [
                 'mandatory'          => false,
                 'tl_class'           => 'w50 clr',

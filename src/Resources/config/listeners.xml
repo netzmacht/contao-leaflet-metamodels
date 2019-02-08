@@ -11,13 +11,14 @@
             <argument type="service" id="netzmacht.contao_toolkit.dca.manager" />
             <argument type="service" id="database_connection" />
             <argument type="service" id="netzmacht.contao_toolkit.contao.backend_adapter" />
-            <argument type="collection">%netzmacht.contao_leaflet.layers%</argument>
+            <argument>%netzmacht.contao_leaflet.layers%</argument>
         </service>
 
         <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\RendererDcaListener" public="true">
             <argument type="service" id="netzmacht.contao_toolkit.dca.manager" />
             <argument type="service" id="metamodels.factory" />
             <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
+            <argument type="service" id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory" />
         </service>
 
         <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Subscriber">

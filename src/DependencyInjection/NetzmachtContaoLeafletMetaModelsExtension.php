@@ -35,7 +35,7 @@ final class NetzmachtContaoLeafletMetaModelsExtension extends Extension
         );
 
         $loader->load('listeners.xml');
-        $loader->load('services.yml');
+        $loader->load('services.xml');
 
         $this->registerLayer($container);
     }

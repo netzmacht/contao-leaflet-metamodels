@@ -84,6 +84,11 @@ class MarkerRenderer extends AbstractRenderer
         if ($this->model->deferred == $deferred) {
             $marker = $this->buildMarker($item, $parentId);
 
+            if ($marker === null) {
+                return;
+            }
+
+            $filter = $request && $request->getFilter();
             if ($this->layerModel->boundsMode === 'fit' && $filter instanceof BboxFilter) {
                 if (!$filter->getBounds()->contains($marker->getLatLng())) {
                     return;
@@ -103,9 +108,9 @@ class MarkerRenderer extends AbstractRenderer
      * @param Item   $item     The metamodel item.
      * @param string $parentId Id of the parent layer.
      *
-     * @return Marker
+     * @return Marker|null
      */
-    protected function buildMarker(Item $item, $parentId): Marker
+    protected function buildMarker(Item $item, $parentId): ?Marker
     {
         $metaModel   = $item->getMetaModel();
         $coordinates = $this->getCoordinates($item);
@@ -148,7 +153,7 @@ class MarkerRenderer extends AbstractRenderer
      */
     protected function getCoordinates(Item $item): ?LatLng
     {
-        if ($this->model->coordinates == 'separate') {
+        if ($this->model->coordinates === 'separate') {
             $latAttribute = $this->getAttribute('latitudeAttribute', $item);
             $lngAttribute = $this->getAttribute('longitudeAttribute', $item);
 

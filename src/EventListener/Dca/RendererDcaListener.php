@@ -16,6 +16,7 @@ namespace Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca;
 
 use Contao\DataContainer;
 use MetaModels\Factory as MetaModelsFactory;
+use Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory;
 use Netzmacht\Contao\Toolkit\Data\Model\RepositoryManager;
 use Netzmacht\Contao\Toolkit\Dca\Listener\AbstractListener;
 use Netzmacht\Contao\Toolkit\Dca\Manager;
@@ -52,21 +53,31 @@ final class RendererDcaListener extends AbstractListener
     private $repositoryManager;
 
     /**
+     * Layer renderer factory.
+     *
+     * @var RendererFactory
+     */
+    private $rendererFactory;
+
+    /**
      * Renderer constructor.
      *
      * @param Manager           $manager           Data container manager.
      * @param MetaModelsFactory $metaModelsFactory MetaModels factory.
      * @param RepositoryManager $repositoryManager Repository manager.
+     * @param RendererFactory   $rendererFactory   Renderer factory.
      */
     public function __construct(
         Manager $manager,
         MetaModelsFactory $metaModelsFactory,
-        RepositoryManager $repositoryManager
+        RepositoryManager $repositoryManager,
+        RendererFactory $rendererFactory
     ) {
         parent::__construct($manager);
 
         $this->metaModelsFactory = $metaModelsFactory;
         $this->repositoryManager = $repositoryManager;
+        $this->rendererFactory   = $rendererFactory;
     }
 
     /**
@@ -131,6 +142,16 @@ final class RendererDcaListener extends AbstractListener
         }
 
         return $settings;
+    }
+
+    /**
+     * Get all renderer type options.
+     *
+     * @return array
+     */
+    public function getRendererTypes(): array
+    {
+        return $this->rendererFactory->supportedTypes();
     }
 
     /**

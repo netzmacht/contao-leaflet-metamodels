@@ -79,18 +79,4 @@ final class LeafletMapSelect extends Select
             )
         );
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function valueToWidget($varValue)
-    {
-        if ($this->isTreePicker()) {
-            $strColNameAlias = $this->getIdColumn();
-        } else {
-            $strColNameAlias = 'alias';
-        }
-
-        return $varValue[$strColNameAlias];
-    }
 }

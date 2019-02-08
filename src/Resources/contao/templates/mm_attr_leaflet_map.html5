@@ -20,7 +20,7 @@ if ($this->raw['id']) {
             null,
             $identifier,
             $template,
-            $this->settings->leaflet_style
+            $this->settings->get('leaflet_style')
         );
     } else {
         echo $this->raw['title'];

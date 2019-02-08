@@ -18,6 +18,8 @@
         </service>
 
         <service id="Netzmacht\Contao\Leaflet\MetaModels\Attribute\AttributeTypeFactory">
+            <argument type="service" id="database_connection" />
+            <argument type="service" id="metamodels.table_manipulator" />
             <tag name="metamodels.attribute_factory" />
         </service>
 

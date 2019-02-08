@@ -165,8 +165,8 @@ abstract class AbstractRenderer implements Renderer
         $data  = [];
 
         if ($settings) {
-            $template         = new Template($settings->get('template'));
-            $template['view'] = $settings;
+            $template     = new Template($settings->get('template'));
+            $data['view'] = $settings;
         } else {
             $template = new Template('metamodel_full');
         }
