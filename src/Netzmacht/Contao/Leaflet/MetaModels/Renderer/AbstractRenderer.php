@@ -16,7 +16,7 @@ use MetaModels\IItems;
 use MetaModels\IMetaModel as MetaModel;
 use MetaModels\IItem as Item;
 use MetaModels\Items;
-use MetaModels\Render\Setting\Factory as RenderSettingFactory;
+use MetaModels\Render\Setting\RenderSettingFactory;
 use MetaModels\Render\Setting\ICollection as RenderSetting;
 use MetaModels\Render\Template;
 use Netzmacht\Contao\Leaflet\Filter\Filter;
@@ -189,7 +189,9 @@ abstract class AbstractRenderer implements Renderer
     protected function getRenderSettings(MetaModel $metaModel)
     {
         if ($this->model->renderSettings) {
-            $settings = RenderSettingFactory::byId($metaModel, $this->model->renderSettings);
+            /** @var RenderSettingFactory $factory */
+            $factory  = $GLOBALS['container']['metamodels-render-setting-factory.factory'];
+            $settings = $factory->createCollection($metaModel, $this->model->renderSettings);
 
             return $settings;
         }
