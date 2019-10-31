@@ -38,6 +38,7 @@ use Netzmacht\LeafletPHP\Plugins\Omnivore\GeoJson as OmnivoreGeoJson;
 use Netzmacht\LeafletPHP\Plugins\Omnivore\OmnivoreLayer;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\GeoJson\GeoJsonFeature;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -104,6 +105,13 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     private $inputAdapter;
 
     /**
+     * Http request stack.
+     *
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
      * Renderer factory.
      *
      * @var RendererFactory
@@ -119,6 +127,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
      * @param RouterInterface      $router               Router.
      * @param RendererFactory      $rendererFactory      Renderer factory.
      * @param Adapter              $inputAdapter         Input adapter.
+     * @param RequestStack         $requestStack         Http request stack.
      */
     public function __construct(
         Factory $metaModelFactory,
@@ -126,7 +135,8 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         RepositoryManager $repositoryManager,
         RouterInterface $router,
         RendererFactory $rendererFactory,
-        Adapter $inputAdapter
+        Adapter $inputAdapter,
+        RequestStack $requestStack
     ) {
         parent::__construct();
 
@@ -136,6 +146,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         $this->router               = $router;
         $this->inputAdapter         = $inputAdapter;
         $this->rendererFactory      = $rendererFactory;
+        $this->requestStack         = $requestStack;
     }
 
     /**
@@ -150,7 +161,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         $layer = new GeoJson($this->getElementId($model, $elementId));
         $layer->setOptions($this->getLayerOptions($model));
 
-        $route     = $this->router->generate('leaflet_layer', ['layerId' => $model->id]);
+        $route     = $this->generateRoute($model);
         $elementId = $this->getElementId($model, $elementId);
 
         return [$elementId, $route, [], $layer];
@@ -358,5 +369,33 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         }
 
         return $options;
+    }
+
+    /**
+     * Generate route to layer api call.
+     *
+     * @param Model $model The layer model.
+     *
+     * @return string
+     *
+     * @SuppressWarnings(PHPMD.Superglobals)
+     */
+    protected function generateRoute(Model $model): string
+    {
+        $request = $this->requestStack->getCurrentRequest();
+        $params  = $request ? $request->query->all() : [];
+
+        if ($this->inputAdapter->get('auto_item')) {
+            $params['auto_item'] = $this->inputAdapter->get('auto_item');
+        }
+
+        if (isset($GLOBALS['objPage'])) {
+            $params['context']   = 'page';
+            $params['contextId'] = $GLOBALS['objPage']->id;
+        }
+
+        $params['layerId'] = $model->id;
+
+        return $this->router->generate('leaflet_layer', $params);
     }
 }
