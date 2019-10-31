@@ -29,8 +29,8 @@ Each layer intergrates one specific MetaModel into the Maps. For each layer mult
 Requirements
 ------------
 
-The Leaflet integration for the Contao CMS requires at least PHP 5.4. 
-This extension only works for [MetaModels 2.0.x](https://github.com/MetaModels/core/tree/tng).
+The Leaflet integration for the Contao CMS requires at least PHP 7.1. 
+This extension only works for [MetaModels 2.1.x](https://github.com/MetaModels/core).
 
 Install
 -------
@@ -38,5 +38,5 @@ Install
 This extension can be installed using composer:
 
 ```
-$ php composer.phar require netzmacht/contao-leaflet-metamodels:~2.0
+$ php composer.phar require netzmacht/contao-leaflet-metamodels:~3.0@rc
 ```
