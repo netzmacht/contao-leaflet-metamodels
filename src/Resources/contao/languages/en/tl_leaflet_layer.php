@@ -15,3 +15,5 @@ $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby_direction'][1] = 'Asce
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filtering'][0]        = 'Filter settings to apply';
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filtering'][1]        = 'Select the filter settings that shall get applied when compiling the list.';
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filterparams'][0]     = 'Filter parameter override';
+$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_fef_params'][0]       = 'Attributes';
+$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_fef_params'][1]       = 'Attributes which should be passed to the filter';

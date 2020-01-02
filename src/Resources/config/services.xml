@@ -30,7 +30,6 @@
             <argument type="service" id="router" />
             <argument type="service" id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory" />
             <argument type="service" id="netzmacht.contao_toolkit.contao.input_adapter" />
-            <argument type="service" id="request_stack" />
             <tag name="netzmacht.contao_leaflet.mapper" />
         </service>
 
