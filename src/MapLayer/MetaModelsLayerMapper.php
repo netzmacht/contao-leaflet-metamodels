@@ -372,12 +372,8 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
      */
     protected function generateRoute(Model $model): string
     {
-        $params     = [];
-        $paramNames = StringUtil::deserialize($model->metamodel_fef_params, true);
-
-        foreach ($paramNames as $paramName) {
-            $params[$paramName] = $this->inputAdapter->get($paramName);
-        }
+        $filterSetting = $this->filterSettingFactory->createCollection($model->metamodel_filtering);
+        $params        = $this->getFilterParameters($filterSetting);
 
         if (isset($GLOBALS['objPage'])) {
             $params['context']   = 'page';

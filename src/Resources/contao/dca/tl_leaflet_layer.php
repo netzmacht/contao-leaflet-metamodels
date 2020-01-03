@@ -39,7 +39,6 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['metapalettes']['metamodels extends defau
         'metamodel_sortby',
         'metamodel_sortby_direction',
         'metamodel_filtering',
-        'metamodel_fef_params',
         'metamodel_filterparams',
     ],
     '+expert' => ['onEachFeature', 'pointToLayer'],
@@ -150,17 +149,4 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_filterparams'] = [
         ],
     ],
     'sql'       => 'longblob NULL',
-];
-
-$GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_fef_params'] = [
-    'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_fef_params'],
-    'exclude'          => true,
-    'inputType'        => 'checkboxWizard',
-    'options_callback' => [ContentElementCallback::class, 'getFilterParameterNames'],
-    'eval'             =>
-        [
-        'multiple' => true,
-        'tl_class' => 'clr'
-        ],
-    'sql'              => 'blob NULL'
 ];
