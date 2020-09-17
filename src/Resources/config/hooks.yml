@@ -1,0 +1,3 @@
+services:
+    Netzmacht\Contao\Leaflet\MetaModels\Contao\Hooks\LeafletLayerCallback:
+        parent: MetaModels\CoreBundle\Contao\Hooks\AbstractContentElementAndModuleCallback
