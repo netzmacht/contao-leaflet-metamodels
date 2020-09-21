@@ -37,19 +37,4 @@ class LeafletLayerCallback extends AbstractContentElementAndModuleCallback
     {
         parent::buildFilterParamsFor($dataContainer, 'metamodels');
     }
-
-    /**
-     * Fetch the template group for the current MetaModel content element.
-     *
-     * @param \DC_Table $objDC The data container calling this method.
-     *
-     * @return array
-     */
-    public function getTemplates(\DC_Table $objDC)
-    {
-        /** @noinspection PhpUndefinedFieldInspection */
-        $type = $objDC->activeRecord->type;
-
-        return $this->getTemplateList('mod_' . $type);
-    }
 }
