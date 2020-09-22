@@ -1,3 +1,0 @@
-services:
-    Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener:
-        parent: MetaModels\CoreBundle\Contao\Hooks\AbstractContentElementAndModuleCallback

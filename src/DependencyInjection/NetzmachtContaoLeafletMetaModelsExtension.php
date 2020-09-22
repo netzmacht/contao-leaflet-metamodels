@@ -19,7 +19,6 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
 use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
-use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 
 /**
  * Class NetzmachtContaoLeafletMetaModelsExtension
@@ -38,12 +37,6 @@ final class NetzmachtContaoLeafletMetaModelsExtension extends Extension
 
         $xmlLoader->load('listeners.xml');
         $xmlLoader->load('services.xml');
-        
-        $ymlLoader = new YamlFileLoader(
-            $container,
-            new FileLocator(__DIR__.'/../Resources/config')
-        );
-        $ymlLoader->load('hooks.yml');
 
         $this->registerLayer($container);
     }
