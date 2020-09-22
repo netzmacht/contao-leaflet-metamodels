@@ -29,11 +29,11 @@ class LeafletLayerCallback extends AbstractContentElementAndModuleCallback
     /**
      * Called from tl_content.onload_callback.
      *
-     * @param \DC_Table $dataContainer The data container calling this method.
+     * @param \Contao\DataContainer $dataContainer The data container calling this method.
      *
      * @return void
      */
-    public function buildFilterParameterList(\DC_Table $dataContainer)
+    public function buildFilterParameterList(\Contao\DataContainer $dataContainer)
     {
         parent::buildFilterParamsFor($dataContainer, 'metamodels');
     }
