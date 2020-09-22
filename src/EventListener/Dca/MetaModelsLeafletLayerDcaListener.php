@@ -10,14 +10,14 @@
  * @filesource MetaModels\CoreBundle\Contao\Hooks\ModuleCallback
  */
 
-namespace Netzmacht\Contao\Leaflet\MetaModels\Contao\Hooks;
+namespace Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca;
 
 use MetaModels\CoreBundle\Contao\Hooks\AbstractContentElementAndModuleCallback;
 
 /**
  * This class provides callbacks for tl_module.
  */
-class LeafletLayerCallback extends AbstractContentElementAndModuleCallback
+class MetaModelsLeafletLayerDcaListener extends AbstractContentElementAndModuleCallback
 {
     /**
      * The table name.

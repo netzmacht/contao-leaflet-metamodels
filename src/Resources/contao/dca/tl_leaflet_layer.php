@@ -13,10 +13,10 @@
 
 declare(strict_types=1);
 
-use Netzmacht\Contao\Leaflet\MetaModels\Contao\Hooks\LeafletLayerCallback;
 use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\LayerDcaListener;
+use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener;
 
-$GLOBALS['TL_DCA']['tl_leaflet_layer']['config']['onload_callback'][] = array(LeafletLayerCallback::class, 'buildFilterParameterList');
+$GLOBALS['TL_DCA']['tl_leaflet_layer']['config']['onload_callback'][] = array(MetaModelsLeafletLayerDcaListener::class, 'buildFilterParameterList');
 
 array_insert(
     $GLOBALS['TL_DCA']['tl_leaflet_layer']['list']['operations'],
@@ -100,7 +100,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_sortby'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => [LeafletLayerCallback::class, 'getAttributeNames'],
+    'options_callback' => [MetaModelsLeafletLayerDcaListener::class, 'getAttributeNames'],
     'eval'             => [
         'includeBlankOption' => true,
         'chosen'             => true,
@@ -127,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_filtering'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filtering'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => [LeafletLayerCallback::class, 'getFilterSettings'],
+    'options_callback' => [MetaModelsLeafletLayerDcaListener::class, 'getFilterSettings'],
     'default'          => '0',
     'eval'             => [
         'includeBlankOption' => true,
