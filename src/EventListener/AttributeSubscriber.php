@@ -64,6 +64,7 @@ final class AttributeSubscriber implements EventSubscriberInterface
     {
         if ($event->getPropertyName() !== 'select_sorting'
             || $event->getEnvironment()->getDataDefinition()->getName() !== 'tl_metamodel_attribute'
+            || $event->getModel()->getProperty('type') !== 'leaflet_map'
         ) {
             return;
         }
