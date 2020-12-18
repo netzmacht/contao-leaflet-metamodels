@@ -63,7 +63,7 @@ final class AttributeTypeFactory implements IAttributeTypeFactory
      */
     public function getTypeIcon(): string
     {
-        return 'system/modules/leaflet/assets/img/map.png';
+        return 'bundles/netzmachtcontaoleafletmaps/img/map.png';
     }
 
     /**
