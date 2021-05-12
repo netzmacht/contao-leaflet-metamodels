@@ -5,7 +5,8 @@
  *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2019 netzmacht David Molineus
+ * @author     Cliff Parnitzky <contao@cliff-parnitzky.de>
+ * @copyright  2015-2020 netzmacht David Molineus
  * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
  */
@@ -29,13 +30,13 @@ final class NetzmachtContaoLeafletMetaModelsExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $loader = new XmlFileLoader(
+        $xmlLoader = new XmlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
-        $loader->load('listeners.xml');
-        $loader->load('services.xml');
+        $xmlLoader->load('listeners.xml');
+        $xmlLoader->load('services.xml');
 
         $this->registerLayer($container);
     }
