@@ -40,3 +40,9 @@ This extension can be installed using composer:
 ```
 $ php composer.phar require netzmacht/contao-leaflet-metamodels:~3.0@rc
 ```
+
+Translations
+------------
+
+The translations are maintained via the [Transifex service](https://www.transifex.com/netzmacht/contao-leaflet-maps/).
+Please enter further languages or additions there.
