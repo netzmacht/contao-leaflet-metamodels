@@ -30,13 +30,13 @@ final class NetzmachtContaoLeafletMetaModelsExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        $xmlLoader = new XmlFileLoader(
+        $loader = new XmlFileLoader(
             $container,
             new FileLocator(__DIR__.'/../Resources/config')
         );
 
-        $xmlLoader->load('listeners.xml');
-        $xmlLoader->load('services.xml');
+        $loader->load('listeners.xml');
+        $loader->load('services.xml');
 
         $this->registerLayer($container);
     }
