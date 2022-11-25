@@ -18,7 +18,7 @@ use Contao\Backend;
 use Contao\CoreBundle\Framework\Adapter;
 use MetaModels\Factory as MetaModelsFactory;
 use Netzmacht\Contao\Leaflet\Backend\Renderer\Label\Layer\AbstractLabelRenderer;
-use Symfony\Component\Translation\TranslatorInterface as Translator;
+use Symfony\Contracts\Translation\TranslatorInterface as Translator;
 
 /**
  * Class MetaModelsLayerLabelRenderer
