@@ -125,20 +125,21 @@ final class RendererDcaListener extends AbstractListener
 
         if ($dataContainer->activeRecord) {
             $repository = $this->repositoryManager->getRepository(LayerModel::class);
-            $layer      = $repository->find((int) $dataContainer->activeRecord->pid);
+            $layer      = $repository->find((int)$dataContainer->activeRecord->pid);
 
             if ($layer === null) {
                 return $settings;
             }
 
+            /** @var \Doctrine\DBAL\Statement $statement */
             $statement = $this->repositoryManager
                 ->getConnection()
                 ->prepare('SELECT id, name FROM tl_metamodel_rendersettings WHERE pid=:metaModelId');
 
             $statement->bindValue('metaModelId', $layer->metamodel);
-            $statement->execute();
+            $resutl = $statement->executeQuery();
 
-            return OptionsBuilder::fromArrayList($statement->fetchAll(PDO::FETCH_ASSOC), 'name')->getOptions();
+            return OptionsBuilder::fromArrayList($resutl->fetchAllAssociative(), 'name')->getOptions();
         }
 
         return $settings;
