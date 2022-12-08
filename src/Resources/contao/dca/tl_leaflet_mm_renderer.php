@@ -5,7 +5,8 @@
  *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2019 netzmacht David Molineus
+ * @author     Sven Baumann <baumann.sv@gmail.com>
+ * @copyright  2015-2022 netzmacht David Molineus
  * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
  */
@@ -66,7 +67,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_mm_renderer'] = [
                 'label'      => &$GLOBALS['TL_LANG']['tl_leaflet_mm_renderer']['delete'],
                 'href'       => 'act=delete',
                 'icon'       => 'delete.gif',
-                'attributes' => 'onclick="if(!confirm(\'' . $GLOBALS['TL_LANG']['MSC']['deleteConfirm']
+                'attributes' => 'onclick="if(!confirm(\'' . @$GLOBALS['TL_LANG']['MSC']['deleteConfirm']
                     . '\'))return false;Backend.getScrollOffset()"',
             ],
             'toggle' => [
