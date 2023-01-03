@@ -30,7 +30,7 @@ Requirements
 ------------
 
 The Leaflet integration for the Contao CMS requires at least PHP 7.1. 
-This extension works for [MetaModels 2.1.x and 2.2.x](https://github.com/MetaModels/core).
+This extension works for [MetaModels 2.1.x, 2.2.x, 2.3.x](https://github.com/MetaModels/core).
 
 Install
 -------
