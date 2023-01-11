@@ -32,12 +32,12 @@
     "netzmacht/contao-toolkit": "~3.0",
     "netzmacht/php-javascript-builder": "^1.0.2",
     "netzmacht/php-leaflet": "^1.0",
-    "symfony/config": "^3.4 || ^4.0 || ^5.4",
-    "symfony/dependency-injection": "^3.4.26 || ^4.1.12 || ^5.4",
-    "symfony/event-dispatcher": "^3.4 || ^4.0 || ^5.4",
-    "symfony/http-kernel": "^3.4 || ^4.0 || ^5.4",
-    "symfony/routing": "^3.4 || ^4.0 || ^5.4",
-    "symfony/translation": "^3.4 || ^4.0 || ^5.4"
+    "symfony/config": "^5.4",
+    "symfony/dependency-injection": "^5.4",
+    "symfony/event-dispatcher": "^5.4",
+    "symfony/http-kernel": "^5.4",
+    "symfony/routing": "^5.4",
+    "symfony/translation": "^5.4"
   },
   "conflict": {
     "contao/manager-plugin": "<2.1 || >= 3.0"
