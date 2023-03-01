@@ -2,7 +2,7 @@
 MetaModels layer for the Leaflet maps integration for Contao CMS
 ================================================================
 
-[![Build Status](http://img.shields.io/travis/netzmacht/contao-leaflet-metamodels/master.svg?style=flat-square)](https://travis-ci.org/netzmacht/contao-leaflet-metamodels)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/netzmacht/contao-leaflet-metamodels/diagnostics.yml?flat-square&branch=master)](https://github.com/netzmacht/contao-leaflet-metamodels/actions/workflows/diagnostics.yml)
 [![Version](http://img.shields.io/packagist/v/netzmacht/contao-leaflet-metamodels.svg?style=flat-square)](http://packagist.com/packages/netzmacht/contao-leaflet-metamodels)
 [![License](http://img.shields.io/packagist/l/netzmacht/contao-leaflet-metamodels.svg?style=flat-square)](http://packagist.com/packages/netzmacht/contao-leaflet-metamodels)
 [![Downloads](http://img.shields.io/packagist/dt/netzmacht/contao-leaflet-metamodels.svg?style=flat-square)](http://packagist.com/packages/netzmacht/contao-leaflet-metamodels)

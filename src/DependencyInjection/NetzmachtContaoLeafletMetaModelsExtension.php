@@ -22,6 +22,8 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 /**
  * Class NetzmachtContaoLeafletMetaModelsExtension
+ *
+ * @SuppressWarnings(PHPMD.LongClassName)
  */
 final class NetzmachtContaoLeafletMetaModelsExtension extends Extension
 {

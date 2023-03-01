@@ -1,14 +1,14 @@
 {
   "name": "netzmacht/contao-leaflet-metamodels",
-  "type": "contao-bundle",
   "description": "Metamodels layer for the Leaflet maps integration in Contao CMS",
+  "license": "LGPL-3.0-or-later",
+  "type": "contao-bundle",
   "keywords": [
     "contao",
     "maps",
     "leaflet",
     "metamodels"
   ],
-  "license": "LGPL-3.0-or-later",
   "authors": [
     {
       "name": "David Molineus",
@@ -17,6 +17,11 @@
       "role": "Developer"
     }
   ],
+  "support": {
+    "email": "mail@netzmacht.de",
+    "issues": "https://github.com/netzmacht/contao-leaflet-metamodels/issues",
+    "source": "https://github.com/netzmacht/contao-leaflet-metamodels"
+  },
   "require": {
     "php": ">=7.1",
     "ext-json": "*",
@@ -39,36 +44,40 @@
     "symfony/routing": "^4.4 || ^5.4",
     "symfony/translation": "^4.4 || ^5.4"
   },
-  "conflict": {
-    "contao/manager-plugin": "<2.1 || >= 3.0"
-  },
   "require-dev": {
     "contao/manager-plugin": "^2.1",
-    "phpcq/all-tasks": "^1.2"
+    "phpcq/coding-standard": "^2.1",
+    "phpcq/runner-bootstrap": "^1.0@dev"
   },
-  "extra": {
-    "branch-alias": {
-      "dev-master": "2.0.x-dev",
-      "dev-develop": "3.0.x-dev"
-    },
-    "contao": {
-      "transifex": {
-        "project": "contao-leaflet-maps",
-        "prefix": "metamodels-",
-        "languages_cto": "src/Resources/contao/languages",
-        "languages_tx": ".tx"
-      }
-    },
-    "contao-manager-plugin": "Netzmacht\\Contao\\Leaflet\\MetaModels\\ContaoManager\\Plugin"
+  "conflict": {
+    "contao/manager-plugin": "<2.1 || >= 3.0"
   },
   "autoload": {
     "psr-4": {
       "Netzmacht\\Contao\\Leaflet\\MetaModels\\": "src/"
     }
   },
-  "support": {
-    "email": "mail@netzmacht.de",
-    "issues": "https://github.com/netzmacht/contao-leaflet-metamodels/issues",
-    "source": "https://github.com/netzmacht/contao-leaflet-metamodels"
+  "config": {
+    "allow-plugins": {
+      "contao-components/installer": true,
+      "php-http/discovery": true,
+      "contao-community-alliance/composer-plugin": true,
+      "contao/manager-plugin": true
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-develop": "3.0.x-dev",
+      "dev-master": "2.0.x-dev"
+    },
+    "contao": {
+      "transifex": {
+        "languages_cto": "src/Resources/contao/languages",
+        "languages_tx": ".tx",
+        "prefix": "metamodels-",
+        "project": "contao-leaflet-maps"
+      }
+    },
+    "contao-manager-plugin": "Netzmacht\\Contao\\Leaflet\\MetaModels\\ContaoManager\\Plugin"
   }
 }
