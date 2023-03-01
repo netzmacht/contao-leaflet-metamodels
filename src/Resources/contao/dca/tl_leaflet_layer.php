@@ -16,7 +16,10 @@ declare(strict_types=1);
 use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\LayerDcaListener;
 use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener;
 
-$GLOBALS['TL_DCA']['tl_leaflet_layer']['config']['onload_callback'][] = array(MetaModelsLeafletLayerDcaListener::class, 'buildFilterParameterList');
+$GLOBALS['TL_DCA']['tl_leaflet_layer']['config']['onload_callback'][] = [
+    MetaModelsLeafletLayerDcaListener::class,
+    'buildFilterParameterList'
+];
 
 array_insert(
     $GLOBALS['TL_DCA']['tl_leaflet_layer']['list']['operations'],

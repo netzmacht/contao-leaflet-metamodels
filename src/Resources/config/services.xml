@@ -26,6 +26,9 @@
         <service id="Netzmacht\Contao\Leaflet\MetaModels\MapLayer\MetaModelsLayerMapper">
             <argument type="service" id="metamodels.factory" />
             <argument type="service" id="metamodels.filter_setting_factory" />
+            <argument type="service" id="metamodels.render_setting_factory" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="MetaModels\Filter\FilterUrlBuilder" />
             <argument type="service" id="netzmacht.contao_toolkit.repository_manager" />
             <argument type="service" id="router" />
             <argument type="service" id="Netzmacht\Contao\Leaflet\MetaModels\Renderer\RendererFactory" />

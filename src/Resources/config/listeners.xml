@@ -14,9 +14,15 @@
             <argument>%netzmacht.contao_leaflet.layers%</argument>
         </service>
 
-        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener"
-          public="true" autoconfigure="false" autowire="true"
-          parent="MetaModels\CoreBundle\Contao\Hooks\AbstractContentElementAndModuleCallback" />
+        <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener" public="true">
+            <argument type="service" id="metamodels.assets.icon_builder"/>
+            <argument type="service" id="metamodels.backend.url-builder-factory"/>
+            <argument type="service" id="metamodels.factory"/>
+            <argument type="service" id="metamodels.filter_setting_factory"/>
+            <argument type="service" id="database_connection"/>
+            <argument type="service" id="metamodels.template_list"/>
+            <argument type="service" id="request_stack"/>
+        </service>
 
         <service id="Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\RendererDcaListener" public="true">
             <argument type="service" id="netzmacht.contao_toolkit.dca.manager" />

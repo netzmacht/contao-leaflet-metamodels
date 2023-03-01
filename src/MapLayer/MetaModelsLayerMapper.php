@@ -19,10 +19,13 @@ use Contao\CoreBundle\Framework\Adapter;
 use Contao\Model;
 use Contao\StringUtil;
 use MetaModels\Factory;
-use MetaModels\Filter\Setting\FilterSettingFactory;
-use MetaModels\Filter\Setting\ICollection;
+use MetaModels\Filter\FilterUrl;
+use MetaModels\Filter\FilterUrlBuilder;
+use MetaModels\Filter\Setting\IFilterSettingFactory as FilterSettingFactory;
 use MetaModels\IItems as Items;
 use MetaModels\IMetaModel as MetaModel;
+use MetaModels\ItemList;
+use MetaModels\Render\Setting\IRenderSettingFactory as RenderSettingFactory;
 use Netzmacht\Contao\Leaflet\Mapper\DefinitionMapper;
 use Netzmacht\Contao\Leaflet\Mapper\GeoJsonMapper;
 use Netzmacht\Contao\Leaflet\Mapper\Layer\AbstractLayerMapper;
@@ -39,6 +42,7 @@ use Netzmacht\LeafletPHP\Plugins\Omnivore\GeoJson as OmnivoreGeoJson;
 use Netzmacht\LeafletPHP\Plugins\Omnivore\OmnivoreLayer;
 use Netzmacht\LeafletPHP\Value\GeoJson\FeatureCollection;
 use Netzmacht\LeafletPHP\Value\GeoJson\GeoJsonFeature;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -85,6 +89,13 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     private $filterSettingFactory;
 
     /**
+     * Render setting factory.
+     *
+     * @var RenderSettingFactory
+     */
+    private $renderSettingFactory;
+
+    /**
      * Router.
      *
      * @var RouterInterface
@@ -113,6 +124,20 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     private $rendererFactory;
 
     /**
+     * Event dispatcher.
+     *
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
+    /**
+     * Filter url builder.
+     *
+     * @var FilterUrlBuilder
+     */
+    private $filterUrlBuilder;
+
+    /**
      * LayerMapper constructor.
      *
      * @param Factory              $metaModelFactory     MetaModel factory.
@@ -125,6 +150,9 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     public function __construct(
         Factory $metaModelFactory,
         FilterSettingFactory $filterSettingFactory,
+        RenderSettingFactory $renderSettingFactory,
+        EventDispatcherInterface $eventDispatcher,
+        FilterUrlBuilder $filterUrlBuilder,
         RepositoryManager $repositoryManager,
         RouterInterface $router,
         RendererFactory $rendererFactory,
@@ -134,10 +162,13 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
 
         $this->metaModelFactory     = $metaModelFactory;
         $this->filterSettingFactory = $filterSettingFactory;
+        $this->renderSettingFactory = $renderSettingFactory;
         $this->repositoryManager    = $repositoryManager;
         $this->router               = $router;
         $this->inputAdapter         = $inputAdapter;
         $this->rendererFactory      = $rendererFactory;
+        $this->eventDispatcher      = $eventDispatcher;
+        $this->filterUrlBuilder     = $filterUrlBuilder;
     }
 
     /**
@@ -178,9 +209,9 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
                 return;
             }
 
-            $items = $this->getItems($metaModel, $model);
+            $items = $this->getItems($model);
 
-            if (!$items->getCount()) {
+            if (! $items->getCount()) {
                 return;
             }
 
@@ -211,11 +242,11 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         $metaModelName = $this->metaModelFactory->translateIdToMetaModelName($model->metamodel);
         $metaModel     = $this->metaModelFactory->getMetaModel($metaModelName);
 
-        if ($metaModel === null || !$model instanceof LayerModel) {
+        if ($metaModel === null || ! $model instanceof LayerModel) {
             return null;
         }
 
-        $items     = $this->getItems($metaModel, $model);
+        $items     = $this->getItems($model);
         $renderers = $this->getRenderers($model, $metaModel, $items, $mapper, $request, true);
 
         foreach ($items as $item) {
@@ -247,7 +278,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         Request $request = null,
         $deferred = false
     ): array {
-        if (!array_key_exists($model->id, $this->renderer)) {
+        if (! array_key_exists($model->id, $this->renderer)) {
             $renderers  = [];
             $collection = $this->repositoryManager
                 ->getRepository(RendererModel::class)
@@ -272,34 +303,47 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     /**
      * Get all MetaModel items.
      *
-     * @param MetaModel  $metaModel The MetaModel.
-     * @param LayerModel $model     The layer model.
+     * @param LayerModel $model The layer model.
      *
      * @return Items
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    private function getItems(MetaModel $metaModel, LayerModel $model): Items
+    private function getItems(LayerModel $model): Items
     {
-        $metaModelFilter = $metaModel->getEmptyFilter();
+        $filterParams = StringUtil::deserialize($model->metamodel_filterparams, true);
+        $itemRenderer = new ItemList(
+            $this->metaModelFactory,
+            $this->filterSettingFactory,
+            $this->renderSettingFactory,
+            $this->eventDispatcher,
+            $this->filterUrlBuilder,
+            'mm_leaflet_' . $model->id
+        );
 
-        $filterSetting = $this->filterSettingFactory->createCollection($model->metamodel_filtering);
-        $filterSetting->addRules(
-            $metaModelFilter,
-            array_merge(
-                StringUtil::deserialize($model->metamodel_filterparams, true),
-                $this->getFilterParameters($filterSetting)
+        // @codingStandardsIgnoreStart
+        // FIXME: filter URL should be created from local request and not from master request.
+        // @codingStandardsIgnoreEnd
+        $filterUrl = $this->filterUrlBuilder->getCurrentFilterUrl();
+
+        $itemRenderer
+            ->setMetaModel($model->metamodel, 0)
+            ->setLimit(
+                (bool) $model->metamodel_use_limit,
+                (int) $model->metamodel_offset,
+                (int) $model->metamodel_limit
             )
-        );
+            ->setPageBreak((int) $model->perPage)
+            ->setSorting($model->metamodel_sortby, $model->metamodel_sortby_direction)
+            ->setFilterSettings($model->metamodel_filtering)
+            ->setFilterParameters(
+                $filterParams,
+                $this->getFilterParameters($filterUrl, $itemRenderer->getFilterSettings()->getParameters())
+            );
 
-        return $metaModel->findByFilter(
-            $metaModelFilter,
-            $model->metamodel_sortby,
-            0,
-            $model->metamodel_use_limit ? ((int) $model->metamodel_limit) : 0,
-            $model->metamodel_sortby_direction
-            // $this->getAttributeNames() - Do we have to limit the attributes here?
-        );
+        $itemRenderer->prepare();
+
+        return $itemRenderer->getItems();
     }
 
     /**
@@ -322,22 +366,53 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
     /**
      * Retrieve all filter parameters from the input class for the specified filter setting.
      *
-     * @param ICollection $filterSettings The filter settings.
+     * @param FilterUrl $filterUrl  The filter URL to obtain parameters from.
+     * @param string[]  $parameters The filter parameters.
      *
      * @return string[]
      */
-    protected function getFilterParameters(ICollection $filterSettings): array
+    private function getFilterParameters(FilterUrl $filterUrl, array $parameters): array
     {
-        $params = [];
-
-        foreach (array_keys($filterSettings->getParameterFilterNames()) as $name) {
-            $value = $this->inputAdapter->get($name);
-            if (is_string($value)) {
-                $params[$name] = $value;
+        $result = [];
+        foreach ($parameters as $name) {
+            if (null !== $value = $this->tryReadFromSlugOrGet($filterUrl, $name, 'slugNget')) {
+                $result[$name] = $value;
             }
         }
 
-        return $params;
+        return $result;
+    }
+
+    /**
+     * Get parameter from get or slug.
+     *
+     * @param FilterUrl $filterUrl The filter URL to obtain parameters from.
+     * @param string    $sortParam The sort parameter name to obtain.
+     * @param string    $sortType  The sort URL type.
+     *
+     * @return string|null
+     */
+    private function tryReadFromSlugOrGet(FilterUrl $filterUrl, string $sortParam, string $sortType): ?string
+    {
+        $result = null;
+
+        switch ($sortType) {
+            case 'get':
+                $result = $filterUrl->getGet($sortParam);
+                break;
+            case 'slug':
+                $result = $filterUrl->getSlug($sortParam);
+                break;
+            case 'slugNget':
+                $result = ($filterUrl->getGet($sortParam) ?? $filterUrl->getSlug($sortParam));
+                break;
+            default:
+        }
+
+        // Mark the parameter as used (otherwise, a 404 is thrown)
+        $this->inputAdapter->get($sortParam);
+
+        return $result;
     }
 
     /**
@@ -373,8 +448,9 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
      */
     protected function generateRoute(Model $model): string
     {
+        $filterUrl     = $this->filterUrlBuilder->getCurrentFilterUrl();
         $filterSetting = $this->filterSettingFactory->createCollection($model->metamodel_filtering);
-        $params        = $this->getFilterParameters($filterSetting);
+        $params        = $this->getFilterParameters($filterUrl, $filterSetting->getParameters());
 
         if (isset($GLOBALS['objPage'])) {
             $params['context']   = 'page';
