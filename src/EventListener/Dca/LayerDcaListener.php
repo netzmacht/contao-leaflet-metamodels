@@ -96,7 +96,7 @@ final class LayerDcaListener extends AbstractListener
     {
         $result = $this->connection
             ->executeQuery('SELECT id, name FROM tl_metamodel ORDER BY name')
-            ->fetchAll(\PDO::FETCH_ASSOC);
+            ->fetchAllAssociative();
 
         return OptionsBuilder::fromArrayList($result, 'name')->getOptions();
     }

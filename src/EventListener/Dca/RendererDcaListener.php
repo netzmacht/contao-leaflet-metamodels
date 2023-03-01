@@ -131,14 +131,15 @@ final class RendererDcaListener extends AbstractListener
                 return $settings;
             }
 
+            /** @var \Doctrine\DBAL\Statement $statement */
             $statement = $this->repositoryManager
                 ->getConnection()
                 ->prepare('SELECT id, name FROM tl_metamodel_rendersettings WHERE pid=:metaModelId');
 
             $statement->bindValue('metaModelId', $layer->metamodel);
-            $statement->execute();
+            $result = $statement->executeQuery();
 
-            return OptionsBuilder::fromArrayList($statement->fetchAll(PDO::FETCH_ASSOC), 'name')->getOptions();
+            return OptionsBuilder::fromArrayList($result->fetchAllAssociative(), 'name')->getOptions();
         }
 
         return $settings;
