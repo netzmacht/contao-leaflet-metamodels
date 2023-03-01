@@ -5,15 +5,18 @@
  *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2019 netzmacht David Molineus
+ * @author     Cliff Parnitzky <contao@cliff-parnitzky.de>
+ * @copyright  2015-2020 netzmacht David Molineus
  * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
  */
 
 declare(strict_types=1);
 
-use MetaModels\CoreBundle\Contao\Hooks\ContentElementCallback;
 use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\LayerDcaListener;
+use Netzmacht\Contao\Leaflet\MetaModels\EventListener\Dca\MetaModelsLeafletLayerDcaListener;
+
+$GLOBALS['TL_DCA']['tl_leaflet_layer']['config']['onload_callback'][] = array(MetaModelsLeafletLayerDcaListener::class, 'buildFilterParameterList');
 
 array_insert(
     $GLOBALS['TL_DCA']['tl_leaflet_layer']['list']['operations'],
@@ -97,7 +100,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_sortby'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => [ContentElementCallback::class, 'getAttributeNames'],
+    'options_callback' => [MetaModelsLeafletLayerDcaListener::class, 'getAttributeNames'],
     'eval'             => [
         'includeBlankOption' => true,
         'chosen'             => true,
@@ -124,7 +127,7 @@ $GLOBALS['TL_DCA']['tl_leaflet_layer']['fields']['metamodel_filtering'] = [
     'label'            => &$GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_filtering'],
     'exclude'          => true,
     'inputType'        => 'select',
-    'options_callback' => [ContentElementCallback::class, 'getFilterSettings'],
+    'options_callback' => [MetaModelsLeafletLayerDcaListener::class, 'getFilterSettings'],
     'default'          => '0',
     'eval'             => [
         'includeBlankOption' => true,

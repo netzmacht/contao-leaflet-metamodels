@@ -27,4 +27,3 @@ $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby_direction']['0'] = 'Na
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_sortby_direction']['1'] = 'Nach aufsteigender oder absteigender Reihenfolge  sortieren.';
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_use_limit']['0']        = 'Offset und Limit für die Auflistung verwenden.';
 $GLOBALS['TL_LANG']['tl_leaflet_layer']['metamodel_use_limit']['1']        = 'Auswählen, falls Sie die Anzahl anzuzeigender Datensätze begrenzen möchten. Diese Einstellung ist beispielsweise nützlich, wenn Sie nur die ersten 500 Datensätze anzeigen möchten, oder falls Sie alle Datensätze anzeigen und dabei die ersten 10 überspringen wollen. Eine voreingestellte Paginierung bleibt dabei erhalten.';
-

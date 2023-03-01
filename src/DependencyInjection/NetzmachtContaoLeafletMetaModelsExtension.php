@@ -5,7 +5,8 @@
  *
  * @package    contao-leaflet-metamodels
  * @author     David Molineus <david.molineus@netzmacht.de>
- * @copyright  2015-2019 netzmacht David Molineus
+ * @author     Cliff Parnitzky <contao@cliff-parnitzky.de>
+ * @copyright  2015-2020 netzmacht David Molineus
  * @license    LGPL 3.0-or-later https://github.com/netzmacht/contao-leaflet-metamodels/blob/master/LICENSE
  * @filesource
  */
