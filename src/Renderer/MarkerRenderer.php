@@ -161,7 +161,7 @@ class MarkerRenderer extends AbstractRenderer
             $lng = $item->get($lngAttribute->getColName());
 
 
-            if ($lat == '' || $lat === null || $lat == '' || $lat === null) {
+            if ($lat === '' || $lat === null || $lat === '' || $lat === null) {
                 return null;
             }
 
