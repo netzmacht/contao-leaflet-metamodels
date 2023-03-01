@@ -47,7 +47,7 @@ class GeoJsonRenderer extends AbstractRenderer
 
         $attribute = $this->getAttribute('geojsonAttribute', $item);
 
-        if ($attribute->get('type') === 'file') {
+        if ($attribute && $attribute->get('type') === 'file') {
             $this->loadFeaturesFromFile(
                 $item,
                 $attribute->getColName(),
