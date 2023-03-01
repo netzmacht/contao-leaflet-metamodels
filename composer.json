@@ -23,7 +23,7 @@
     "source": "https://github.com/netzmacht/contao-leaflet-metamodels"
   },
   "require": {
-    "php": ">=7.1",
+    "php": "^7.1 || ^8.0",
     "ext-json": "*",
     "ext-pdo": "*",
     "contao-community-alliance/dc-general": "~2.1",
@@ -42,7 +42,8 @@
     "symfony/event-dispatcher": "^4.4 || ^5.4",
     "symfony/http-kernel": "^4.4 || ^5.4",
     "symfony/routing": "^4.4 || ^5.4",
-    "symfony/translation": "^4.4 || ^5.4"
+    "symfony/translation": "^4.4 || ^5.4",
+    "symfony/translation-contracts": "^1.1 || ^2.0"
   },
   "require-dev": {
     "contao/manager-plugin": "^2.1",
