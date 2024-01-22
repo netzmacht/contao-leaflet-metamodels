@@ -327,7 +327,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
         $filterUrl = $this->filterUrlBuilder->getCurrentFilterUrl();
 
         $itemRenderer
-            ->setMetaModel($model->metamodel, 0)
+            ->setMetaModel((int) $model->metamodel, 0)
             ->setLimit(
                 (bool) $model->metamodel_use_limit,
                 (int) $model->metamodel_offset,
@@ -335,7 +335,7 @@ final class MetaModelsLayerMapper extends AbstractLayerMapper implements GeoJson
             )
             ->setPageBreak((int) $model->perPage)
             ->setSorting($model->metamodel_sortby, $model->metamodel_sortby_direction)
-            ->setFilterSettings($model->metamodel_filtering)
+            ->setFilterSettings((int) $model->metamodel_filtering)
             ->setFilterParameters(
                 $filterParams,
                 $this->getFilterParameters($filterUrl, $itemRenderer->getFilterSettings()->getParameters())
